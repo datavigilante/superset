@@ -118,16 +118,10 @@ try:
 except ImportError:
     logger.info("Using default Docker config...")
 
-FEATURE_FLAGS = {
-    "DASHBOARD_RBAC": True,
-    # Add other feature flags here if needed
-}
+# LOGGING_LEVEL = "DEBUG"
 
-LOGGING_LEVEL = "DEBUG"
-
-import sys
-print("PYTHONPATH:", sys.path)
-
+# import sys
+# print("PYTHONPATH:", sys.path)
 
 # Define a function to initialize plugins
 def init_plugins(appbuilder):
@@ -140,6 +134,7 @@ def init_plugins(appbuilder):
 
 FEATURE_FLAGS = {
     "ENABLE_CUSTOM_PLUGIN": True,
+    "DASHBOARD_RBAC": True,
 }
 
 print("CONFIG: Superset configuration loading complete")

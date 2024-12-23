@@ -13,8 +13,8 @@ logging.basicConfig(level=logging.DEBUG)
 logger.debug("PLUGIN: Plugin file loaded")
 print("PLUGIN: Plugin file loaded")
 
-QUERY_EXPORT_DIR = '/app/superset/custom_plugins/saved_queries'
-DATASET_EXPORT_DIR = '/app/superset/custom_plugins/datasets'
+QUERY_EXPORT_DIR = '/app/superset/custom_plugins/save_query_export/queries'
+DATASET_EXPORT_DIR = '/app/superset/custom_plugins/save_query_export/datasets'
 
 def export_query_to_file(query):
     # Ensure the directory exists
@@ -41,18 +41,22 @@ def on_query_saved(mapper, connection, target):
 def on_query_deleted(mapper, connection, target):
     filename = f"{target.id}_{target.label}.sql"
     file_path = os.path.join(QUERY_EXPORT_DIR, filename)
-    os.remove(file_path)
+    try:
+        os.remove(file_path)
+    except OSError:
+        pass
 
 def export_dataset_to_file(dataset):
     filename = f"{dataset.table_name}.sql"
     file_path = os.path.join(DATASET_EXPORT_DIR, filename)
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
-    try:
-        with open(file_path, "w") as file:
-            file.write(dataset.sql)
-    except Exception as e:
-        logger.error(f"PLUGIN: Failed to write dataset to file: {e}")
+    if dataset.schema_perm != "[examples].[public]":
+        try:
+            with open(file_path, "w") as file:
+                file.write(dataset.sql)
+        except Exception as e:
+            logger.error(f"PLUGIN: Failed to write dataset to file: {e}")
 
 def dataset_saved_listener(mapper, connection, target):
     export_dataset_to_file(target)
@@ -75,13 +79,11 @@ class SaveQueryExportPlugin:
 
     def register_views(self):
         from superset.models.sql_lab import SavedQuery
+        from superset.connectors.sqla.models import SqlaTable as Dataset
 
         listen(SavedQuery, "after_insert", on_query_saved)
         listen(SavedQuery, "after_update", on_query_saved)
         listen(SavedQuery, "after_delete", on_query_deleted)
-
-        from superset.connectors.sqla.models import SqlaTable as Dataset
-
         event.listen(Dataset, "after_insert", dataset_saved_listener)
         event.listen(Dataset, "after_update", dataset_saved_listener)
         event.listen(Dataset, "after_delete", dataset_deleted_listener)

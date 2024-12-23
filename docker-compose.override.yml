@@ -1,9 +1,5 @@
 services:
   superset:
     volumes:
-#      - ./superset/custom_plugins:/app/superset/custom_plugins
-      - /temp/docker_local/superset/queries:/app/superset/custom_plugins/saved_queries
-      - /temp/docker_local/superset/datasets:/app/superset/custom_plugins/datasets
-  superset-worker:
-    volumes:
-#      - ./superset/custom_plugins:/app/superset/custom_plugins
+      - /home/davidw/repos/superset-data/queries:/app/superset/custom_plugins/save_query_export/queries
+      - /home/davidw/repos/superset-data/datasets:/app/superset/custom_plugins/save_query_export/datasets

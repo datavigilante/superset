@@ -33,7 +33,7 @@ export default eyesPlugin(
     video: false,
     viewportWidth: 1280,
     viewportHeight: 1024,
-    projectId: 'ud5x2f',
+    projectId: "j7nqyu",
     retries: {
       runMode: 2,
       openMode: 0,

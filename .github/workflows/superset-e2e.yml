@@ -46,7 +46,7 @@ jobs:
       SUPERSET_ENV: development
       SUPERSET_CONFIG: tests.integration_tests.superset_test_config
       SUPERSET__SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://superset:superset@127.0.0.1:15432/superset
-      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/docker/pythonpath_dev
+      PYTHONPATH: ${{ github.workspace }}
       REDIS_PORT: 16379
       GITHUB_TOKEN: ${{ github.token }}
       # use the dashboard feature when running manually OR merging to master
@@ -103,8 +103,8 @@ jobs:
       - name: Debug superset_config.py location
         run: |
           echo "PYTHONPATH: $PYTHONPATH"
-          ls -l /home/runner/work/superset/superset/docker/pythonpath_dev
-          cat /home/runner/work/superset/superset/docker/pythonpath_dev/superset_config.py || echo "superset_config.py not found"
+          ls -l /home/runner/work/superset/superset/docker/
+          cat /home/runner/work/superset/superset/docker/superset_config.py || echo "superset_config.py not found"
       - name: Import test data
         if: steps.check.outputs.python || steps.check.outputs.frontend
         uses: ./.github/actions/cached-dependencies

@@ -100,6 +100,11 @@ jobs:
         uses: ./.github/actions/cached-dependencies
         with:
           run: setup-postgres
+      - name: Debug superset_config.py location
+        run: |
+          echo "PYTHONPATH: $PYTHONPATH"
+          ls -l /home/runner/work/superset/superset/docker/pythonpath_dev
+          cat /home/runner/work/superset/superset/docker/pythonpath_dev/superset_config.py || echo "superset_config.py not found"
       - name: Import test data
         if: steps.check.outputs.python || steps.check.outputs.frontend
         uses: ./.github/actions/cached-dependencies

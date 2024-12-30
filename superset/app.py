@@ -40,6 +40,9 @@ def create_app(superset_config_module: Optional[str] = None) -> Flask:
         app_initializer.init_app()
 
         # Initialize custom plugins after app initialization
+        import sys
+        print("PYTHONPATH:", sys.path)
+
         from superset_config import init_plugins
         init_plugins(app.appbuilder)
 

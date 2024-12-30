@@ -86,6 +86,9 @@ jobs:
           persist-credentials: false
           ref: refs/pull/${{ github.event.inputs.pr_id }}/merge
           submodules: recursive
+      - name: Checkout repository
+        if: github.event_name != 'push' && github.event_name != 'pull_request' && github.event_name != 'workflow_dispatch'
+        uses: actions/checkout@v4
       # -------------------------------------------------------
       - name: Check for file changes
         id: check

@@ -108,7 +108,7 @@ testdata() {
   cd "$GITHUB_WORKSPACE"
   say "::group::Load test data"
   # must specify PYTHONPATH to make `tests.superset_test_config` importable
-  export PYTHONPATH="$GITHUB_WORKSPACE:$GITHUB_WORKSPACE/superset/docker"
+  export PYTHONPATH="$GITHUB_WORKSPACE:$GITHUB_WORKSPACE/docker"
   pip install -e .
   superset db upgrade
   superset load_test_users
@@ -121,7 +121,7 @@ celery-worker() {
   cd "$GITHUB_WORKSPACE"
   say "::group::Start Celery worker"
   # must specify PYTHONPATH to make `tests.superset_test_config` importable
-  export PYTHONPATH="$GITHUB_WORKSPACE:$GITHUB_WORKSPACE/superset/docker"
+  export PYTHONPATH="$GITHUB_WORKSPACE:$GITHUB_WORKSPACE/docker"
   celery \
     --app=superset.tasks.celery_app:app \
     worker \

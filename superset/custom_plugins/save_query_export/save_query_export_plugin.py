@@ -49,10 +49,10 @@ def on_query_deleted(mapper, connection, target):
 def export_dataset_to_file(dataset):
     filename = f"{dataset.table_name}.sql"
     file_path = os.path.join(DATASET_EXPORT_DIR, filename)
-    os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
     if dataset.schema_perm != "[examples].[public]":
         try:
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)
             with open(file_path, "w") as file:
                 file.write(dataset.sql)
         except Exception as e:

@@ -100,19 +100,6 @@ jobs:
         uses: ./.github/actions/cached-dependencies
         with:
           run: setup-postgres
-      - name: Debug superset_config.py location
-        run: |
-          echo "PYTHONPATH: $PYTHONPATH"
-          ls -l /home/runner/work/superset/superset/docker/
-          cat /home/runner/work/superset/superset/docker/superset_config.py || echo "superset_config.py not found"
-      - name: Test superset_config Import
-        run: |
-          python3 -c "
-          import sys
-          sys.path.insert(0, '/home/runner/work/superset/superset/docker')
-          print('PYTHONPATH:', sys.path)
-          from superset_config import init_plugins
-          print('Import succeeded')"        
       - name: Import test data
         if: steps.check.outputs.python || steps.check.outputs.frontend
         uses: ./.github/actions/cached-dependencies

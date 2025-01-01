@@ -108,7 +108,7 @@ testdata() {
   cd "$GITHUB_WORKSPACE"
   say "::group::Load test data"
   # must specify PYTHONPATH to make `tests.superset_test_config` importable
-  export PYTHONPATH="$GITHUB_WORKSPACE"
+  export PYTHONPATH="$GITHUB_WORKSPACE:$GITHUB_WORKSPACE/superset/docker"
   pip install -e .
   superset db upgrade
   superset load_test_users

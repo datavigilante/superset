@@ -59,7 +59,10 @@ REDIS_PORT = os.getenv("REDIS_PORT", "6379")
 REDIS_CELERY_DB = os.getenv("REDIS_CELERY_DB", "0")
 REDIS_RESULTS_DB = os.getenv("REDIS_RESULTS_DB", "1")
 
-RESULTS_BACKEND = FileSystemCache("/app/superset_home/sqllab")
+#RESULTS_BACKEND = FileSystemCache("/app/superset_home/sqllab")
+
+# Change to a writable directory within the runner's workspace
+RESULTS_BACKEND = FileSystemCache(os.path.expanduser("~/superset_home/sqllab"))
 
 CACHE_CONFIG = {
     "CACHE_TYPE": "RedisCache",

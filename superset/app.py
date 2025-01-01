@@ -41,6 +41,7 @@ def create_app(superset_config_module: Optional[str] = None) -> Flask:
 
         # Initialize custom plugins after app initialization
         import sys
+        sys.path.insert(0, "/home/runner/work/superset/superset/superset/docker")
         print("PYTHONPATH:", sys.path)
 
         try:

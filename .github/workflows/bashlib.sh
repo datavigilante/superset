@@ -121,7 +121,7 @@ celery-worker() {
   cd "$GITHUB_WORKSPACE"
   say "::group::Start Celery worker"
   # must specify PYTHONPATH to make `tests.superset_test_config` importable
-  export PYTHONPATH="$GITHUB_WORKSPACE"
+  export PYTHONPATH="$GITHUB_WORKSPACE:$GITHUB_WORKSPACE/superset/docker"
   celery \
     --app=superset.tasks.celery_app:app \
     worker \

@@ -43,7 +43,12 @@ def create_app(superset_config_module: Optional[str] = None) -> Flask:
         import sys
         print("PYTHONPATH:", sys.path)
 
-        from superset_config import init_plugins
+        try:
+            from superset_config import init_plugins
+            print("Successfully imported superset_config!")
+        except ModuleNotFoundError as e:
+            print("ModuleNotFoundError:", e)
+
         init_plugins(app.appbuilder)
 
         return app

@@ -68,7 +68,7 @@ export default eyesPlugin(
         // eslint-disable-next-line global-require,import/extensions
         return config;
       },
-      baseUrl: 'http://localhost:8088',
+      baseUrl: 'http://localhost:8089',
       excludeSpecPattern: [],
       specPattern: [
         'cypress/e2e/**/*.{js,jsx,ts,tsx}',

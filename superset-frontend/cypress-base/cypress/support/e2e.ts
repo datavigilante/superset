@@ -84,12 +84,8 @@ before(() => {
 });
 
 beforeEach(() => {
-  // Reuse the session and ensure it's valid with a minimal setup
-  cy.session('user-session', () => {
-    cy.login();
-  });
-
-  // Perform cleanup tasks
+  // Reuse the session
+//  cy.session('user-session'); // No need for additional setup
   cy.cleanDashboards();
   cy.cleanCharts();
 });

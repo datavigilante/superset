@@ -61,11 +61,25 @@ Cypress.Commands.add('loadDashboardFixtures', () =>
   }),
 );
 
+// before(() => {
+//   cy.login();
+//   Cypress.Cookies.defaults({ preserve: 'session' });
+//   cy.loadChartFixtures();
+//   cy.loadDashboardFixtures();
+// });
+
 before(() => {
-  cy.login();
-  Cypress.Cookies.defaults({ preserve: 'session' });
-  cy.loadChartFixtures();
-  cy.loadDashboardFixtures();
+  cy.session('user-session', () => {
+    // Perform login
+    cy.login();
+
+    // Load necessary fixtures
+    cy.loadChartFixtures();
+    cy.loadDashboardFixtures();
+  });
+
+  // Preserve session cookies for the current test session
+  Cypress.Cookies.preserveOnce('session');
 });
 
 beforeEach(() => {

@@ -84,12 +84,7 @@ before(() => {
 });
 
 beforeEach(() => {
-  // Ensure the session is restored
-  cy.session('user-session', () => {
-    cy.login();
-  });
-
-  // Perform your existing cleanup tasks
+  cy.restoreSession('user-session'); // Ensures session is reused without redefining
   cy.cleanDashboards();
   cy.cleanCharts();
 });

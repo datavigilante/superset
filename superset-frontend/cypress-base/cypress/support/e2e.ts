@@ -84,8 +84,10 @@ before(() => {
 });
 
 beforeEach(() => {
-  // Reuse the cached session
-  cy.session('user-session');
+  // Ensure the session is restored
+  cy.session('user-session', () => {
+    cy.login();
+  });
 
   // Perform your existing cleanup tasks
   cy.cleanDashboards();

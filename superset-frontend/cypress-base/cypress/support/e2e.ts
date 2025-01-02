@@ -77,12 +77,22 @@ before(() => {
     cy.loadChartFixtures();
     cy.loadDashboardFixtures();
   });
-
-  // Preserve session cookies for the current test session
-  Cypress.Cookies.preserveOnce('session');
 });
 
+// beforeEach(() => {
+//   cy.cleanDashboards();
+//   cy.cleanCharts();
+// });
+
 beforeEach(() => {
+  // Reuse the cached session to ensure the user stays logged in
+  cy.session('user-session', () => {
+    cy.login();
+    cy.loadChartFixtures();
+    cy.loadDashboardFixtures();
+  });
+
+  // Perform your existing cleanup tasks
   cy.cleanDashboards();
   cy.cleanCharts();
 });

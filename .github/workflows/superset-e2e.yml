@@ -46,7 +46,7 @@ jobs:
       SUPERSET_ENV: development
       SUPERSET_CONFIG: tests.integration_tests.superset_test_config
       SUPERSET__SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://superset:superset@127.0.0.1:15432/superset
-      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/superset/docker
+      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/docker
       REDIS_PORT: 16379
       GITHUB_TOKEN: ${{ github.token }}
       # use the dashboard feature when running manually OR merging to master

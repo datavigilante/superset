@@ -75,7 +75,7 @@ Cypress.Commands.add('loadDashboardFixtures', () =>
 // });
 
 before(() => {
-  // Create the session once
+  // Create the session once with full setup
   cy.session('user-session', () => {
     cy.login();
     cy.loadChartFixtures();
@@ -84,7 +84,12 @@ before(() => {
 });
 
 beforeEach(() => {
-  cy.restoreSession('user-session'); // Ensures session is reused without redefining
+  // Reuse the session and ensure it's valid with a minimal setup
+  cy.session('user-session', () => {
+    cy.login();
+  });
+
+  // Perform cleanup tasks
   cy.cleanDashboards();
   cy.cleanCharts();
 });

@@ -68,29 +68,24 @@ Cypress.Commands.add('loadDashboardFixtures', () =>
 //   cy.loadDashboardFixtures();
 // });
 
-before(() => {
-  cy.session('user-session', () => {
-    // Perform login
-    cy.login();
-
-    // Load necessary fixtures
-    cy.loadChartFixtures();
-    cy.loadDashboardFixtures();
-  });
-});
 
 // beforeEach(() => {
 //   cy.cleanDashboards();
 //   cy.cleanCharts();
 // });
 
-beforeEach(() => {
-  // Reuse the cached session to ensure the user stays logged in
+before(() => {
+  // Create the session once
   cy.session('user-session', () => {
     cy.login();
     cy.loadChartFixtures();
     cy.loadDashboardFixtures();
   });
+});
+
+beforeEach(() => {
+  // Reuse the cached session
+  cy.session('user-session');
 
   // Perform your existing cleanup tasks
   cy.cleanDashboards();

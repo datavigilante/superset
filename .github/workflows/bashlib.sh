@@ -157,10 +157,18 @@ cypress-run-all() {
   nohup flask run --no-debugger -p $port >"$flasklog" 2>&1 </dev/null &
   local flaskProcessId=$!
 
+  sleep 10  # Allow time for the Flask server to start
+  if ! ps -p $flaskProcessId > /dev/null; then
+    echo "Flask server failed to start. Check logs in $flasklog"
+    cat "$flasklog"
+    exit 1
+  fi
+
   USE_DASHBOARD_FLAG=''
   if [ "$USE_DASHBOARD" = "true" ]; then
     USE_DASHBOARD_FLAG='--use-dashboard'
   fi
+  echo "CYPRESS_BASE_URL is set to $CYPRESS_BASE_URL"
 
   # UNCOMMENT the next few commands to monitor memory usage
   # monitor_memory &  # Start memory monitoring in the background

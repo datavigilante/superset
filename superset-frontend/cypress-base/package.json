@@ -29,7 +29,7 @@
   "devDependencies": {
     "@applitools/eyes-cypress": "^3.48.1",
     "@types/querystringify": "^2.0.0",
-    "cypress": "^13.17.0",
+    "cypress": "^11.2.0",
     "eslint-plugin-cypress": "^3.5.0"
   }
 }

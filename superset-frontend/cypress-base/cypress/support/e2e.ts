@@ -61,31 +61,23 @@ Cypress.Commands.add('loadDashboardFixtures', () =>
   }),
 );
 
-// before(() => {
-//   cy.login();
-//   Cypress.Cookies.defaults({ preserve: 'session' });
-//   cy.loadChartFixtures();
-//   cy.loadDashboardFixtures();
-// });
-
-
-// beforeEach(() => {
-//   cy.cleanDashboards();
-//   cy.cleanCharts();
-// });
-
 before(() => {
-  // Create the session once with full setup
-  cy.session('user-session', () => {
-    cy.login();
-    cy.loadChartFixtures();
-    cy.loadDashboardFixtures();
-  });
+  cy.login();
+  Cypress.Cookies.defaults({ preserve: 'session' });
+  cy.loadChartFixtures();
+  cy.loadDashboardFixtures();
 });
 
+// before(() => {
+//   // Create the session once with full setup
+//   cy.session('user-session', () => {
+//     cy.login();
+//     cy.loadChartFixtures();
+//     cy.loadDashboardFixtures();
+//   });
+// });
+
 beforeEach(() => {
-  // Reuse the session
-//  cy.session('user-session'); // No need for additional setup
   cy.cleanDashboards();
   cy.cleanCharts();
 });

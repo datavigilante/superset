@@ -68,6 +68,15 @@ before(() => {
   cy.loadDashboardFixtures();
 });
 
+// before(() => {
+//   // Create the session once with full setup
+//   cy.session('user-session', () => {
+//     cy.login();
+//     cy.loadChartFixtures();
+//     cy.loadDashboardFixtures();
+//   });
+// });
+
 beforeEach(() => {
   cy.cleanDashboards();
   cy.cleanCharts();

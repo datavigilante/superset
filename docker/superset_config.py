@@ -59,7 +59,10 @@ REDIS_PORT = os.getenv("REDIS_PORT", "6379")
 REDIS_CELERY_DB = os.getenv("REDIS_CELERY_DB", "0")
 REDIS_RESULTS_DB = os.getenv("REDIS_RESULTS_DB", "1")
 
-RESULTS_BACKEND = FileSystemCache("/app/superset_home/sqllab")
+#RESULTS_BACKEND = FileSystemCache("/app/superset_home/sqllab")
+
+# Change to a writable directory within the runner's workspace
+RESULTS_BACKEND = FileSystemCache(os.path.expanduser("~/superset_home/sqllab"))
 
 CACHE_CONFIG = {
     "CACHE_TYPE": "RedisCache",
@@ -117,3 +120,26 @@ try:
     )
 except ImportError:
     logger.info("Using default Docker config...")
+
+# LOGGING_LEVEL = "DEBUG"
+
+# import sys
+# print("PYTHONPATH:", sys.path)
+
+# Define a function to initialize plugins
+def init_plugins(appbuilder):
+    from superset.custom_plugins.save_query_export.save_query_export_plugin import SaveQueryExportPlugin
+
+    # Initialize your plugin
+    plugin = SaveQueryExportPlugin(appbuilder)
+    plugin.init_app()
+    print("CONFIG: Custom plugin initialized")
+
+FEATURE_FLAGS = {
+    "ENABLE_CUSTOM_PLUGIN": True,
+    "DASHBOARD_RBAC": True,
+}
+
+print("CONFIG: Superset configuration loading complete")
+
+

@@ -1,0 +1,5 @@
+services:
+  superset:
+    volumes:
+      - /home/davidw/repos/superset-data/queries:/app/superset/custom_plugins/save_query_export/queries
+      - /home/davidw/repos/superset-data/datasets:/app/superset/custom_plugins/save_query_export/datasets

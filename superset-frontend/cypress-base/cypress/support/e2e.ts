@@ -61,11 +61,23 @@ Cypress.Commands.add('loadDashboardFixtures', () =>
   }),
 );
 
+// before(() => {
+//   cy.login();
+//   Cypress.Cookies.defaults({ preserve: 'session' });
+//   cy.loadChartFixtures();
+//   cy.loadDashboardFixtures();
+// });
+
 before(() => {
-  cy.login();
-  Cypress.Cookies.defaults({ preserve: 'session' });
-  cy.loadChartFixtures();
-  cy.loadDashboardFixtures();
+  // Use cy.session to preserve the session and set up preconditions
+  cy.session('session', () => {
+    cy.login(); // Perform login or any session-establishing steps
+    cy.loadChartFixtures(); // Load chart-related fixtures
+    cy.loadDashboardFixtures(); // Load dashboard-related fixtures
+  });
+
+    // Ensure any additional global setup occurs
+  // cy.visit('/'); // Visit a base route to initialize the app, if needed
 });
 
 beforeEach(() => {

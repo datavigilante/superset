@@ -222,6 +222,7 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
+    "@applitools/eyes-cypress": "^3.49.0",
     "@applitools/eyes-storybook": "^3.50.9",
     "@babel/cli": "^7.22.6",
     "@babel/compat-data": "^7.22.6",
@@ -238,6 +239,7 @@
     "@babel/preset-react": "^7.22.5",
     "@babel/register": "^7.23.7",
     "@babel/types": "^7.24.9",
+    "@cypress/code-coverage": "^3.13.10",
     "@cypress/react": "^8.0.2",
     "@emotion/babel-plugin": "^11.13.5",
     "@emotion/jest": "^11.11.0",
@@ -300,6 +302,8 @@
     "cross-env": "^7.0.3",
     "css-loader": "^6.8.1",
     "css-minimizer-webpack-plugin": "^5.0.1",
+    "cy-verify-downloads": "^0.2.6",
+    "cypress-fail-on-console-error": "^5.1.1",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.7",
     "esbuild": "^0.20.0",

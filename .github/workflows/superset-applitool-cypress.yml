@@ -31,7 +31,7 @@ jobs:
       SUPERSET_ENV: development
       SUPERSET_CONFIG: tests.integration_tests.superset_test_config
       SUPERSET__SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://superset:superset@127.0.0.1:15432/superset
-      PYTHONPATH: ${{ github.workspace }}
+      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/docker/pythonpath_dev
       REDIS_PORT: 16379
       GITHUB_TOKEN: ${{ github.token }}
       APPLITOOLS_APP_NAME: Superset

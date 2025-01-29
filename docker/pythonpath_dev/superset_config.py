@@ -25,40 +25,40 @@ import os
 import sys
 
 from celery.schedules import crontab
-from flask_caching.backends.filesystemcache import FileSystemCache
+# from flask_caching.backends.filesystemcache import FileSystemCache
 
-logger = logging.getLogger()
+# logger = logging.getLogger()
 
-DATABASE_DIALECT = os.getenv("DATABASE_DIALECT")
-DATABASE_USER = os.getenv("DATABASE_USER")
-DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
-DATABASE_HOST = os.getenv("DATABASE_HOST")
-DATABASE_PORT = os.getenv("DATABASE_PORT")
-DATABASE_DB = os.getenv("DATABASE_DB")
+# DATABASE_DIALECT = os.getenv("DATABASE_DIALECT")
+# DATABASE_USER = os.getenv("DATABASE_USER")
+# DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
+# DATABASE_HOST = os.getenv("DATABASE_HOST")
+# DATABASE_PORT = os.getenv("DATABASE_PORT")
+# DATABASE_DB = os.getenv("DATABASE_DB")
 
-EXAMPLES_USER = os.getenv("EXAMPLES_USER")
-EXAMPLES_PASSWORD = os.getenv("EXAMPLES_PASSWORD")
-EXAMPLES_HOST = os.getenv("EXAMPLES_HOST")
-EXAMPLES_PORT = os.getenv("EXAMPLES_PORT")
-EXAMPLES_DB = os.getenv("EXAMPLES_DB")
+# EXAMPLES_USER = os.getenv("EXAMPLES_USER")
+# EXAMPLES_PASSWORD = os.getenv("EXAMPLES_PASSWORD")
+# EXAMPLES_HOST = os.getenv("EXAMPLES_HOST")
+# EXAMPLES_PORT = os.getenv("EXAMPLES_PORT")
+# EXAMPLES_DB = os.getenv("EXAMPLES_DB")
 
-# The SQLAlchemy connection string.
-SQLALCHEMY_DATABASE_URI = (
-    f"{DATABASE_DIALECT}://"
-    f"{DATABASE_USER}:{DATABASE_PASSWORD}@"
-    f"{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_DB}"
-)
+# # The SQLAlchemy connection string.
+# SQLALCHEMY_DATABASE_URI = (
+#     f"{DATABASE_DIALECT}://"
+#     f"{DATABASE_USER}:{DATABASE_PASSWORD}@"
+#     f"{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_DB}"
+# )
 
-SQLALCHEMY_EXAMPLES_URI = (
-    f"{DATABASE_DIALECT}://"
-    f"{EXAMPLES_USER}:{EXAMPLES_PASSWORD}@"
-    f"{EXAMPLES_HOST}:{EXAMPLES_PORT}/{EXAMPLES_DB}"
-)
+# SQLALCHEMY_EXAMPLES_URI = (
+#     f"{DATABASE_DIALECT}://"
+#     f"{EXAMPLES_USER}:{EXAMPLES_PASSWORD}@"
+#     f"{EXAMPLES_HOST}:{EXAMPLES_PORT}/{EXAMPLES_DB}"
+# )
 
-REDIS_HOST = os.getenv("REDIS_HOST", "redis")
-REDIS_PORT = os.getenv("REDIS_PORT", "6379")
-REDIS_CELERY_DB = os.getenv("REDIS_CELERY_DB", "0")
-REDIS_RESULTS_DB = os.getenv("REDIS_RESULTS_DB", "1")
+# REDIS_HOST = os.getenv("REDIS_HOST", "redis")
+# REDIS_PORT = os.getenv("REDIS_PORT", "6379")
+# REDIS_CELERY_DB = os.getenv("REDIS_CELERY_DB", "0")
+# REDIS_RESULTS_DB = os.getenv("REDIS_RESULTS_DB", "1")
 
 # RESULTS_BACKEND = FileSystemCache("/app/superset_home/sqllab")
 

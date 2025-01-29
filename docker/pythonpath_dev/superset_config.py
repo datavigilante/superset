@@ -20,9 +20,9 @@
 # development environments. Also note that superset_config_docker.py is imported
 # as a final step as a means to override "defaults" configured here
 #
-import logging
-import os
-import sys
+# import logging
+# import os
+# import sys
 
 # from celery.schedules import crontab
 # from flask_caching.backends.filesystemcache import FileSystemCache
@@ -123,13 +123,13 @@ import sys
 #
 # Optionally import superset_config_docker.py (which will have been included on
 # the PYTHONPATH) in order to allow for local settings to be overridden
-#
-try:
-    import superset_config_docker
-    from superset_config_docker import *  # noqa
 
-    logger.info(
-        f"Loaded your Docker configuration at " f"[{superset_config_docker.__file__}]"
-    )
-except ImportError:
-    logger.info("Using default Docker config...")
+# try:
+#     import superset_config_docker
+#     from superset_config_docker import *  # noqa
+
+#     logger.info(
+#         f"Loaded your Docker configuration at " f"[{superset_config_docker.__file__}]"
+#     )
+# except ImportError:
+#     logger.info("Using default Docker config...")

@@ -24,7 +24,7 @@ import logging
 import os
 import sys
 
-from celery.schedules import crontab
+# from celery.schedules import crontab
 # from flask_caching.backends.filesystemcache import FileSystemCache
 
 # logger = logging.getLogger()
@@ -62,63 +62,63 @@ from celery.schedules import crontab
 
 # RESULTS_BACKEND = FileSystemCache("/app/superset_home/sqllab")
 
-CACHE_CONFIG = {
-    "CACHE_TYPE": "RedisCache",
-    "CACHE_DEFAULT_TIMEOUT": 300,
-    "CACHE_KEY_PREFIX": "superset_",
-    "CACHE_REDIS_HOST": REDIS_HOST,
-    "CACHE_REDIS_PORT": REDIS_PORT,
-    "CACHE_REDIS_DB": REDIS_RESULTS_DB,
-}
-DATA_CACHE_CONFIG = CACHE_CONFIG
+# CACHE_CONFIG = {
+#     "CACHE_TYPE": "RedisCache",
+#     "CACHE_DEFAULT_TIMEOUT": 300,
+#     "CACHE_KEY_PREFIX": "superset_",
+#     "CACHE_REDIS_HOST": REDIS_HOST,
+#     "CACHE_REDIS_PORT": REDIS_PORT,
+#     "CACHE_REDIS_DB": REDIS_RESULTS_DB,
+# }
+# DATA_CACHE_CONFIG = CACHE_CONFIG
 
 
-class CeleryConfig:
-    broker_url = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_CELERY_DB}"
-    imports = (
-        "superset.sql_lab",
-        "superset.tasks.scheduler",
-        "superset.tasks.thumbnails",
-        "superset.tasks.cache",
-    )
-    result_backend = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_RESULTS_DB}"
-    worker_prefetch_multiplier = 1
-    task_acks_late = False
-    beat_schedule = {
-        "reports.scheduler": {
-            "task": "reports.scheduler",
-            "schedule": crontab(minute="*", hour="*"),
-        },
-        "reports.prune_log": {
-            "task": "reports.prune_log",
-            "schedule": crontab(minute=10, hour=0),
-        },
-    }
+# class CeleryConfig:
+#     broker_url = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_CELERY_DB}"
+#     imports = (
+#         "superset.sql_lab",
+#         "superset.tasks.scheduler",
+#         "superset.tasks.thumbnails",
+#         "superset.tasks.cache",
+#     )
+#     result_backend = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_RESULTS_DB}"
+#     worker_prefetch_multiplier = 1
+#     task_acks_late = False
+#     beat_schedule = {
+#         "reports.scheduler": {
+#             "task": "reports.scheduler",
+#             "schedule": crontab(minute="*", hour="*"),
+#         },
+#         "reports.prune_log": {
+#             "task": "reports.prune_log",
+#             "schedule": crontab(minute=10, hour=0),
+#         },
+#     }
 
 
-CELERY_CONFIG = CeleryConfig
+# CELERY_CONFIG = CeleryConfig
 
-FEATURE_FLAGS = {"ALERT_REPORTS": True}
-ALERT_REPORTS_NOTIFICATION_DRY_RUN = True
-WEBDRIVER_BASEURL = "http://superset_app:8089"  # When using docker compose baseurl should be http://superset_app:8088/  # noqa: E501
-# The base URL for the email report hyperlinks.
-WEBDRIVER_BASEURL_USER_FRIENDLY = WEBDRIVER_BASEURL
-SQLLAB_CTAS_NO_LIMIT = True
+# FEATURE_FLAGS = {"ALERT_REPORTS": True}
+# ALERT_REPORTS_NOTIFICATION_DRY_RUN = True
+# WEBDRIVER_BASEURL = "http://superset_app:8089"  # When using docker compose baseurl should be http://superset_app:8088/  # noqa: E501
+# # The base URL for the email report hyperlinks.
+# WEBDRIVER_BASEURL_USER_FRIENDLY = WEBDRIVER_BASEURL
+# SQLLAB_CTAS_NO_LIMIT = True
 
-log_level_text = os.getenv("SUPERSET_LOG_LEVEL", "INFO")
-LOG_LEVEL = getattr(logging, log_level_text.upper(), logging.INFO)
+# log_level_text = os.getenv("SUPERSET_LOG_LEVEL", "INFO")
+# LOG_LEVEL = getattr(logging, log_level_text.upper(), logging.INFO)
 
-if os.getenv("CYPRESS_CONFIG") == "true":
-    # When running the service as a cypress backend, we need to import the config
-    # located @ tests/integration_tests/superset_test_config.py
-    base_dir = os.path.dirname(__file__)
-    module_folder = os.path.abspath(
-        os.path.join(base_dir, "../../tests/integration_tests/")
-    )
-    sys.path.insert(0, module_folder)
-    from superset_test_config import *  # noqa
+# if os.getenv("CYPRESS_CONFIG") == "true":
+#     # When running the service as a cypress backend, we need to import the config
+#     # located @ tests/integration_tests/superset_test_config.py
+#     base_dir = os.path.dirname(__file__)
+#     module_folder = os.path.abspath(
+#         os.path.join(base_dir, "../../tests/integration_tests/")
+#     )
+#     sys.path.insert(0, module_folder)
+#     from superset_test_config import *  # noqa
 
-    sys.path.pop(0)
+#     sys.path.pop(0)
 
 #
 # Optionally import superset_config_docker.py (which will have been included on

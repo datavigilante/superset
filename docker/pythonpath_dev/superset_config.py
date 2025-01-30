@@ -21,7 +21,7 @@
 # as a final step as a means to override "defaults" configured here
 #
 # import logging
-# import os
+import os
 # import sys
 
 # from celery.schedules import crontab

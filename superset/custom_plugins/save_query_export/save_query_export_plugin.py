@@ -83,7 +83,11 @@ def dataset_deleted_listener(mapper, connection, target):
     file_path = os.path.join(DATASET_EXPORT_DIR, filename)
     logger.debug(f"PLUGIN: dataset_deleted_listener-{file_path}")    
     print(f"PLUGIN: dataset_deleted_listener-{file_path}")
-    os.remove(file_path)
+    if target.schema_perm != "[examples].[public]":
+        try:
+            os.remove(file_path)
+        except Exception as e:
+            logger.error(f"PLUGIN: Failed to delete dataset to file: {e}")
 
 class SaveQueryExportPlugin:
     def __init__(self, appbuilder: AppBuilder):

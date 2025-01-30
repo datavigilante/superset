@@ -40,9 +40,9 @@ def create_app(superset_config_module: Optional[str] = None) -> Flask:
         app_initializer.init_app()
 
         # Initialize custom plugins after app initialization
-        # import sys
-        # # sys.path.insert(0, "/home/runner/work/superset/superset/docker")
-        # print("PYTHONPATH:", sys.path)
+        import sys
+        # sys.path.insert(0, "/home/runner/work/superset/superset/docker")
+        print("PYTHONPATH:", sys.path)
 
         try:
             from superset_config import init_plugins

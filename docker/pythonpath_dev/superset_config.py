@@ -20,14 +20,14 @@
 # development environments. Also note that superset_config_docker.py is imported
 # as a final step as a means to override "defaults" configured here
 #
-import logging
-import os
-import sys
+# import logging
+# import os
+# import sys
 
 # from celery.schedules import crontab
 # from flask_caching.backends.filesystemcache import FileSystemCache
 
-logger = logging.getLogger()
+# logger = logging.getLogger()
 
 # DATABASE_DIALECT = os.getenv("DATABASE_DIALECT")
 # DATABASE_USER = os.getenv("DATABASE_USER")

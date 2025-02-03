@@ -144,9 +144,9 @@ def init_plugins(appbuilder):
     plugin.init_app()
     print("CONFIG: Custom plugin initialized")
 
-FEATURE_FLAGS = {
-    "ENABLE_CUSTOM_PLUGIN": True,
-    # "DASHBOARD_RBAC": True,
-}
+# FEATURE_FLAGS = {
+#     "ENABLE_CUSTOM_PLUGIN": True
+#     # "DASHBOARD_RBAC": True,
+# }
 
 print("CONFIG: Superset configuration loading complete")

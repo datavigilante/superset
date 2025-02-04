@@ -67,8 +67,8 @@ def export_dataset_to_file(dataset):
     filename = f"{dataset.table_name}.sql"
     file_path = os.path.join(DATASET_EXPORT_DIR, filename)
 
-    print(f"PLUGIN: schema-{dataset.schema_perm[0:10]}")
-    if dataset.schema_perm[0:10] != "[examples]":
+    print(f"PLUGIN: schema-{dataset.schema}")
+    if dataset.schema != "public":
         try:
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
             with open(file_path, "w") as file:
@@ -84,7 +84,7 @@ def dataset_deleted_listener(mapper, connection, target):
     file_path = os.path.join(DATASET_EXPORT_DIR, filename)
     logger.debug(f"PLUGIN: dataset_deleted_listener-{file_path}")    
     print(f"PLUGIN: dataset_deleted_listener-{file_path}")
-    if target.schema_perm[0:10] != "[examples]":
+    if target.schema != "public":
         try:
             os.remove(file_path)
         except Exception as e:

@@ -16,20 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-export function BottomRightResizeHandle() {
-  return <div className="resize-handle resize-handle--bottom-right" />;
-}
+import { render } from 'spec/helpers/testing-library';
 
-export function RightResizeHandle() {
-  return <div className="resize-handle resize-handle--right" />;
-}
+import mockDatasource from 'spec/fixtures/mockDatasource';
+import CollectionTable from './CollectionTable';
 
-export function BottomResizeHandle() {
-  return <div className="resize-handle resize-handle--bottom" />;
-}
-
-export default {
-  right: RightResizeHandle,
-  bottom: BottomResizeHandle,
-  bottomRight: BottomRightResizeHandle,
+const props = {
+  collection: mockDatasource['7__table'].columns,
+  tableColumns: ['column_name', 'type', 'groupby'],
+  sortColumns: [],
 };
+
+test('renders a table', () => {
+  const { length } = mockDatasource['7__table'].columns;
+  const { getByRole } = render(<CollectionTable {...props} />);
+  expect(getByRole('table')).toBeInTheDocument();
+  expect(
+    getByRole('table')
+      .getElementsByTagName('tbody')[0]
+      .getElementsByClassName('row'),
+  ).toHaveLength(length);
+});

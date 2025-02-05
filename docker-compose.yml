@@ -88,7 +88,7 @@ services:
     command: ["/app/docker/docker-bootstrap.sh", "app"]
     restart: unless-stopped
     ports:
-      - 8088:8088
+      - 8089:8088
       # When in cypress-mode ->
       - 8081:8081
     extra_hosts:

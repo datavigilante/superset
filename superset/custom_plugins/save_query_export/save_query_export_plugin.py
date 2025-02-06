@@ -68,7 +68,7 @@ def export_dataset_to_file(dataset):
     file_path = os.path.join(DATASET_EXPORT_DIR, filename)
 
     print(f"PLUGIN: schema-{dataset.schema}")
-    if dataset.schema != "public":
+    if dataset.schema not in ["public", "main"]:
         try:
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
             with open(file_path, "w") as file:
@@ -84,7 +84,7 @@ def dataset_deleted_listener(mapper, connection, target):
     file_path = os.path.join(DATASET_EXPORT_DIR, filename)
     logger.debug(f"PLUGIN: dataset_deleted_listener-{file_path}")    
     print(f"PLUGIN: dataset_deleted_listener-{file_path}")
-    if target.schema != "public":
+    if target.schema not in ["public", "main"]:
         try:
             os.remove(file_path)
         except Exception as e:

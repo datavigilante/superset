@@ -146,6 +146,7 @@ def init_plugins(appbuilder):
 
 FEATURE_FLAGS = {
     "DASHBOARD_CROSS_FILTERS": True,
+    "ALLOW_FULL_CSV_EXPORT": True,
     # "DASHBOARD_RBAC": True,
 }
 

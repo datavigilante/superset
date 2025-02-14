@@ -59,7 +59,7 @@ AUTH_ROLE_PUBLIC = "Public"
 CACHE_CONFIG = {"CACHE_TYPE": "SimpleCache"}
 
 REDIS_HOST = os.environ.get("REDIS_HOST", "localhost")  # noqa: F405
-REDIS_PORT = os.environ.get("REDIS_PORT", "6379")  # noqa: F405
+REDIS_PORT = os.environ.get("REDIS_PORT", "6380")  # noqa: F405
 REDIS_CELERY_DB = os.environ.get("REDIS_CELERY_DB", 2)  # noqa: F405
 REDIS_RESULTS_DB = os.environ.get("REDIS_RESULTS_DB", 3)  # noqa: F405
 

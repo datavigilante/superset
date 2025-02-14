@@ -278,7 +278,7 @@ supersetNode:
   connections:
     # -- Change in case of bringing your own redis and then also set redis.enabled:false
     redis_host: "{{ .Release.Name }}-redis-headless"
-    redis_port: "6379"
+    redis_port: "6380"
     redis_user: ""
     # redis_password: superset
     redis_cache_db: "1"
@@ -641,7 +641,7 @@ supersetWebsockets:
       "statsd": { "host": "127.0.0.1", "port": 8125, "globalTags": [] },
       "redis":
         {
-          "port": 6379,
+          "port": 6380,
           "host": "127.0.0.1",
           "password": "",
           "db": 0,

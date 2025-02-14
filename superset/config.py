@@ -1680,7 +1680,7 @@ SESSION_SERVER_SIDE = False
 #
 # SESSION_SERVER_SIDE = True
 # SESSION_TYPE = "redis"
-# SESSION_REDIS = Redis(host="localhost", port=6379, db=0)
+# SESSION_REDIS = Redis(host="localhost", port=6380, db=0)
 #
 # Other possible config options and backends:
 # # https://flask-session.readthedocs.io/en/latest/config.html
@@ -1755,7 +1755,7 @@ GLOBAL_ASYNC_QUERIES_WEBSOCKET_URL = "ws://127.0.0.1:8080/"
 GLOBAL_ASYNC_QUERIES_CACHE_BACKEND = {
     "CACHE_TYPE": "RedisCache",
     "CACHE_REDIS_HOST": "localhost",
-    "CACHE_REDIS_PORT": 6379,
+    "CACHE_REDIS_PORT": 6380,
     "CACHE_REDIS_USER": "",
     "CACHE_REDIS_PASSWORD": "",
     "CACHE_REDIS_DB": 0,

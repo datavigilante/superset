@@ -105,7 +105,7 @@ FEATURE_FLAGS = {
 }
 
 REDIS_HOST = "superset_cache"
-REDIS_PORT = "6379"
+REDIS_PORT = "6380"
 
 class CeleryConfig:
     broker_url = f"redis://{REDIS_HOST}:{REDIS_PORT}/0"

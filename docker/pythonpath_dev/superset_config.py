@@ -133,3 +133,20 @@ try:
     )
 except ImportError:
     logger.info("Using default Docker config...")
+
+# Define a function to initialize plugins
+def init_plugins(appbuilder):
+    from superset.custom_plugins.save_query_export.save_query_export_plugin import SaveQueryExportPlugin
+
+    # Initialize your plugin
+    plugin = SaveQueryExportPlugin(appbuilder)
+    plugin.init_app()
+    print("CONFIG: Custom plugin initialized")
+
+FEATURE_FLAGS = {
+    "DASHBOARD_CROSS_FILTERS": True,
+    "ALLOW_FULL_CSV_EXPORT": True,
+    # "DASHBOARD_RBAC": True,
+}
+
+print("CONFIG: Superset configuration loading complete")

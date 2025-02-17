@@ -84,7 +84,7 @@ class RedisCacheBackend(RedisCache):
     def from_config(cls, config: Dict[str, Any]) -> "RedisCacheBackend":
         kwargs = {
             "host": config.get("CACHE_REDIS_HOST", "localhost"),
-            "port": config.get("CACHE_REDIS_PORT", 6379),
+            "port": config.get("CACHE_REDIS_PORT", 6380),
             "db": config.get("CACHE_REDIS_DB", 0),
             "password": config.get("CACHE_REDIS_PASSWORD", None),
             "key_prefix": config.get("CACHE_KEY_PREFIX", None),

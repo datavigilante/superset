@@ -207,7 +207,7 @@ On helm this can be set on `extraSecretEnv.SUPERSET_SECRET_KEY` or `configOverri
 | supersetNode.connections.redis_cache_db | string | `"1"` |  |
 | supersetNode.connections.redis_celery_db | string | `"0"` |  |
 | supersetNode.connections.redis_host | string | `"{{ .Release.Name }}-redis-headless"` | Change in case of bringing your own redis and then also set redis.enabled:false |
-| supersetNode.connections.redis_port | string | `"6379"` |  |
+| supersetNode.connections.redis_port | string | `"6380"` |  |
 | supersetNode.connections.redis_ssl.enabled | bool | `false` |  |
 | supersetNode.connections.redis_ssl.ssl_cert_reqs | string | `"CERT_NONE"` |  |
 | supersetNode.connections.redis_user | string | `""` |  |

@@ -25,7 +25,7 @@ test('buildConfig() builds configuration and applies env var overrides', () => {
     'test123-test123-test123-test123-test123-test123-test123',
   );
   expect(config.redis.host).toEqual('127.0.0.1');
-  expect(config.redis.port).toEqual(6379);
+  expect(config.redis.port).toEqual(6380);
   expect(config.redis.password).toEqual('some pwd');
   expect(config.redis.db).toEqual(10);
   expect(config.redis.ssl).toEqual(false);

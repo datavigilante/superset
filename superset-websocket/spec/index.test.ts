@@ -145,7 +145,7 @@ describe('server', () => {
     test('it builds a valid Redis URL from defaults', () => {
       expect(
         server.buildRedisOpts({
-          port: 6379,
+          port: 6380,
           host: '127.0.0.1',
           username: 'test-user',
           password: '',
@@ -153,7 +153,7 @@ describe('server', () => {
           ssl: false,
           validateHostname: false,
         }),
-      ).toEqual({ db: 0, host: '127.0.0.1', port: 6379 });
+      ).toEqual({ db: 0, host: '127.0.0.1', port: 6380 });
     });
     test('it builds a valid Redis URL with a password', () => {
       expect(
@@ -177,7 +177,7 @@ describe('server', () => {
     test('it builds a valid Redis URL with SSL', () => {
       expect(
         server.buildRedisOpts({
-          port: 6379,
+          port: 6380,
           host: '127.0.0.1',
           password: '',
           username: 'cool-user',
@@ -188,7 +188,7 @@ describe('server', () => {
       ).toEqual({
         db: 0,
         host: '127.0.0.1',
-        port: 6379,
+        port: 6380,
         tls: { checkServerIdentity: expect.anything() },
       });
     });

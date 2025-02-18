@@ -39,6 +39,18 @@ def create_app(superset_config_module: Optional[str] = None) -> Flask:
         app_initializer = app.config.get("APP_INITIALIZER", SupersetAppInitializer)(app)
         app_initializer.init_app()
 
+        # Initialize custom plugins after app initialization
+        import sys
+        sys.path.insert(0, "/home/runner/work/superset/superset/docker/pythonpath_dev")
+        print("PYTHONPATH:", sys.path)
+
+        try:
+            from superset_config import init_plugins
+            print("Successfully imported superset_config!")
+        except ModuleNotFoundError as e:
+            print("ModuleNotFoundError:", e)
+
+        init_plugins(app.appbuilder)
         return app
 
     # Make sure that bootstrap errors ALWAYS get logged

@@ -18,7 +18,7 @@ jobs:
   test-postgres-presto:
     runs-on: ubuntu-24.04
     env:
-      PYTHONPATH: ${{ github.workspace }}
+      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/docker/pythonpath_dev
       SUPERSET_CONFIG: tests.integration_tests.superset_test_config
       REDIS_PORT: 16379
       SUPERSET__SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://superset:superset@127.0.0.1:15432/superset
@@ -86,7 +86,7 @@ jobs:
   test-postgres-hive:
     runs-on: ubuntu-24.04
     env:
-      PYTHONPATH: ${{ github.workspace }}
+      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/docker/pythonpath_dev
       SUPERSET_CONFIG: tests.integration_tests.superset_test_config
       REDIS_PORT: 16379
       SUPERSET__SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://superset:superset@127.0.0.1:15432/superset

@@ -16,7 +16,36 @@
 # under the License.
 
 services:
+  nginx:
+    ports:
+      - "8082:80"
+  redis:
+    ports:
+      - "127.0.0.1:6379:6379"
+  db:
+    ports:
+      - "0.0.0.0:5432:5432"
   superset:
+    build:
+      context: .
+      dockerfile: Dockerfile.ssh
+      target: dev
+    ports:
+      - 8089:8088
+      # When in cypress-mode ->
+      - 8081:8081
     volumes:
-      - /home/davidw/repos/superset-data/queries:/app/superset/custom_plugins/save_query_export/queries
-      - /home/davidw/repos/superset-data/datasets:/app/superset/custom_plugins/save_query_export/datasets
+      - /home/superset/repos/Ntherm-DW/:/app/Ntherm-DW
+      - /opt/superset-ssh:/mnt/ssh:ro
+    networks:
+      - tasks_app_network
+  superset-websocket:
+    ports:
+      - 8080:8080
+    environment:
+      - REDIS_PORT=6379
+
+networks:
+  tasks_app_network:
+    external: true
+

@@ -17,6 +17,7 @@
 
 import os
 import logging
+import subprocess
 from datetime import datetime
 from sqlalchemy.event import listen
 from sqlalchemy import event
@@ -30,8 +31,8 @@ logging.basicConfig(level=logging.DEBUG)
 logger.debug("PLUGIN: Plugin file loaded")
 print("PLUGIN: Plugin file loaded")
 
-QUERY_EXPORT_DIR = '/app/superset/custom_plugins/save_query_export/queries'
-DATASET_EXPORT_DIR = '/app/superset/custom_plugins/save_query_export/datasets'
+QUERY_EXPORT_DIR = '/app/Ntherm-DW/db/mssql-ntherm/superset-data/queries'
+DATASET_EXPORT_DIR = '/app/Ntherm-DW/db/mssql-ntherm/superset-data/datasets'
 
 def export_query_to_file(query):
     # Ensure the directory exists
@@ -54,6 +55,7 @@ def export_query_to_file(query):
 
 def on_query_saved(mapper, connection, target):
     export_query_to_file(target)
+    git_sync(commit_message=f"Auto commit from on_query_saved-{datetime.now()}")
 
 def on_query_deleted(mapper, connection, target):
     filename = f"{target.id}_{target.label}.sql"
@@ -76,8 +78,53 @@ def export_dataset_to_file(dataset):
         except Exception as e:
             logger.error(f"PLUGIN: Failed to write dataset to file: {e}")
 
+def git_sync(commit_message=None):
+    repo_path = "/app/Ntherm-DW/db/mssql-ntherm/superset-data"
+    ssh_config_path = "/mnt/ssh/config"
+    env = os.environ.copy()
+    env["GIT_SSH_COMMAND"] = f"ssh -F {ssh_config_path}"
+
+    # Ensure the directory exists
+    try:
+        os.makedirs(QUERY_EXPORT_DIR, exist_ok=True)
+        os.makedirs(DATASET_EXPORT_DIR, exist_ok=True)
+
+        # Mark the directory as safe
+        subprocess.run(["git", "config", "--global", "--add", "safe.directory", "/app/Ntherm-DW"], check=True)
+
+    except Exception as e:
+        logger.error(f"Failed to create export directory: {e}")
+        return
+
+    if not commit_message:
+        commit_message = f"Auto commit from Superset on {datetime.now().isoformat()}"
+
+    try:
+        # Stage changes
+        subprocess.run(["git", "add", "."], cwd=repo_path, check=True, env=env)
+
+        # Commit
+        subprocess.run(["git", "commit", "-m", commit_message], cwd=repo_path, check=True, env=env)
+
+        # Pull remote changes
+        subprocess.run(["git", "pull", "--rebase"], cwd=repo_path, check=True, env=env)
+
+        # Push
+        subprocess.run(["git", "push"], cwd=repo_path, check=True, env=env)
+
+        print("✅ Git sync completed successfully.")
+
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Git command failed: {e}")
+        print(f"🔁 Command: {e.cmd}")
+        if e.stdout:
+            print(f"📤 STDOUT:\n{e.stdout.decode()}")
+        if e.stderr:
+            print(f"📥 STDERR:\n{e.stderr.decode()}")
+
 def dataset_saved_listener(mapper, connection, target):
     export_dataset_to_file(target)
+    git_sync(commit_message=f"Auto commit from dataset_saved_listener-{datetime.now()}")
 
 def dataset_deleted_listener(mapper, connection, target):
     filename = f"{target.table_name}.sql"

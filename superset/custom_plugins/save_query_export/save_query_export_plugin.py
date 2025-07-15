@@ -100,6 +100,10 @@ def git_sync(commit_message=None):
         commit_message = f"Auto commit from Superset on {datetime.now().isoformat()}"
 
     try:
+        # Set Git identity
+        subprocess.run(["git", "config", "--global", "user.name", "datavigilante"], check=True, env=env)
+        subprocess.run(["git", "config", "--global", "user.email", "david@datavigilane.com"], check=True, env=env)
+
         # Stage changes
         subprocess.run(["git", "add", "."], cwd=repo_path, check=True, env=env)
 

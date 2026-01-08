@@ -148,7 +148,7 @@ FEATURE_FLAGS = {
     "DASHBOARD_CROSS_FILTERS": True,
     "ALLOW_FULL_CSV_EXPORT": True,
     "ALLOW_ADHOC_SUBQUERY": True,
-    # "DASHBOARD_RBAC": True,
+    "DASHBOARD_RBAC": True,
 }
 
 print("CONFIG: Superset configuration loading complete")

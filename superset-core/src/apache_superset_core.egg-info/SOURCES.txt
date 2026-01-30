@@ -8,9 +8,11 @@ src/apache_superset_core.egg-info/requires.txt
 src/apache_superset_core.egg-info/top_level.txt
 src/superset_core/__init__.py
 src/superset_core/api/__init__.py
-src/superset_core/api/types/__init__.py
-src/superset_core/api/types/models.py
-src/superset_core/api/types/query.py
-src/superset_core/api/types/rest_api.py
+src/superset_core/api/daos.py
+src/superset_core/api/models.py
+src/superset_core/api/query.py
+src/superset_core/api/rest_api.py
+src/superset_core/api/types.py
 src/superset_core/extensions/__init__.py
 src/superset_core/extensions/types.py
+src/superset_core/mcp/__init__.py

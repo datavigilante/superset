@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: apache-superset-core
-Version: 0.0.1rc2
+Version: 0.0.1rc3
 Summary: Core Python package for building Apache Superset backend extensions and integrations
 Author-email: Apache Software Foundation <dev@superset.apache.org>
 License:                               Apache License
@@ -241,7 +241,12 @@ Classifier: Topic :: Software Development :: Libraries :: Python Modules
 Requires-Python: >=3.10
 Description-Content-Type: text/markdown
 License-File: LICENSE.txt
-Requires-Dist: flask-appbuilder<6,>=5.0.0
+Requires-Dist: flask-appbuilder<6,>=5.0.2
+Requires-Dist: pydantic>=2.8.0
+Requires-Dist: sqlalchemy<2.0,>=1.4.0
+Requires-Dist: sqlalchemy-utils>=0.38.0
+Requires-Dist: sqlglot<28,>=27.15.2
+Requires-Dist: typing-extensions>=4.0.0
 Dynamic: license-file
 
 <!--
@@ -295,7 +300,7 @@ The package is organized into logical modules, each providing specific functiona
 from flask import request, Response
 from flask_appbuilder.api import expose, permission_name, protect, safe
 from superset_core.api import models, query, rest_api
-from superset_core.api.types.rest_api import RestApi
+from superset_core.api.rest_api import RestApi
 
 class DatasetReferencesAPI(RestApi):
     """Example extension API demonstrating core functionality."""
@@ -340,7 +345,7 @@ rest_api.add_extension_api(DatasetReferencesAPI)
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see the [Contributing Guide](https://github.com/apache/superset/blob/master/CONTRIBUTING.md) for details.
+We welcome contributions! Please see the [Developer Portal](https://superset.apache.org/developer_portal/) for details.
 
 ## 📄 License
 

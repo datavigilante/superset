@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 @celery_app.task(name="cache_chart_thumbnail", soft_time_limit=300)
 def cache_chart_thumbnail(
     current_user: Optional[str],
-    chart_id: int,
+    chart_id: str,
     force: bool,
     window_size: Optional[WindowSize] = None,
     thumb_size: Optional[WindowSize] = None,
@@ -78,6 +78,7 @@ def cache_dashboard_thumbnail(
     force: bool,
     thumb_size: Optional[WindowSize] = None,
     window_size: Optional[WindowSize] = None,
+    cache_key: str | None = None,
 ) -> None:
     # pylint: disable=import-outside-toplevel
     from superset.models.dashboard import Dashboard
@@ -103,6 +104,7 @@ def cache_dashboard_thumbnail(
             window_size=window_size,
             thumb_size=thumb_size,
             force=force,
+            cache_key=cache_key,
         )
 
 

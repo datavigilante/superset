@@ -25,7 +25,7 @@ import {
 import { DatasourceType } from '@superset-ui/core';
 import { sliceEntitiesForDashboard as mockSliceEntities } from 'spec/fixtures/mockSliceEntities';
 import { configureStore } from '@reduxjs/toolkit';
-import SliceAdder, { SliceAdderProps } from './SliceAdder';
+import SliceAdder, { SliceAdderProps, sortByComparator } from './SliceAdder';
 
 // Mock the Select component to avoid debounce issues
 jest.mock('@superset-ui/core', () => ({
@@ -61,7 +61,7 @@ const mockStore = configureStore({
   reducer: (state = { common: { locale: 'en' } }) => state,
 });
 
-const defaultProps: SliceAdderProps = {
+const defaultProps: Omit<SliceAdderProps, 'theme'> = {
   slices: mockSliceEntities.slices,
   fetchSlices: jest.fn(),
   updateSlices: jest.fn(),
@@ -77,33 +77,34 @@ const defaultProps: SliceAdderProps = {
 const renderSliceAdder = (props = defaultProps) =>
   render(<SliceAdder {...props} />, { store: mockStore });
 
+// eslint-disable-next-line no-restricted-globals -- TODO: Migrate from describe blocks
 describe('SliceAdder', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('renders the create new chart button', () => {
+  test('renders the create new chart button', () => {
     renderSliceAdder();
     expect(screen.getByText('Create new chart')).toBeInTheDocument();
   });
 
-  it('renders loading state', () => {
+  test('renders loading state', () => {
     renderSliceAdder({ ...defaultProps, isLoading: true });
     expect(screen.getByRole('status')).toBeInTheDocument();
   });
 
-  it('renders error message', () => {
+  test('renders error message', () => {
     const errorMessage = 'Error loading charts';
     renderSliceAdder({ ...defaultProps, errorMessage });
     expect(screen.getByText(errorMessage)).toBeInTheDocument();
   });
 
-  it('fetches slices on mount', () => {
+  test('fetches slices on mount', () => {
     renderSliceAdder();
     expect(defaultProps.fetchSlices).toHaveBeenCalledWith(1, '', 'changed_on');
   });
 
-  it('handles search input changes', async () => {
+  test('handles search input changes', async () => {
     renderSliceAdder();
     const searchInput = screen.getByPlaceholderText('Filter your charts');
     await userEvent.type(searchInput, 'test search');
@@ -114,7 +115,7 @@ describe('SliceAdder', () => {
     );
   });
 
-  it('handles sort selection changes', async () => {
+  test('handles sort selection changes', async () => {
     renderSliceAdder();
     // Update selector to match the actual rendered element
     const sortSelect = screen.getByText('Sort by recent');
@@ -124,7 +125,7 @@ describe('SliceAdder', () => {
     expect(defaultProps.fetchSlices).toHaveBeenCalledWith(1, '', 'viz_type');
   });
 
-  it('handles show only my charts toggle', async () => {
+  test('handles show only my charts toggle', async () => {
     renderSliceAdder();
     const checkbox = screen.getByRole('checkbox');
     await userEvent.click(checkbox);
@@ -135,7 +136,7 @@ describe('SliceAdder', () => {
     );
   });
 
-  it('opens new chart in new tab when create new chart is clicked', () => {
+  test('opens new chart in new tab when create new chart is clicked', () => {
     const windowSpy = jest.spyOn(window, 'open').mockImplementation();
     renderSliceAdder();
     const createButton = screen.getByText('Create new chart');
@@ -148,6 +149,7 @@ describe('SliceAdder', () => {
     windowSpy.mockRestore();
   });
 
+  // eslint-disable-next-line no-restricted-globals -- TODO: Migrate from describe blocks
   describe('sortByComparator', () => {
     const baseSlice = {
       slice_url: '/superset/explore/',
@@ -170,7 +172,7 @@ describe('SliceAdder', () => {
       query_context: null,
     };
 
-    it('should sort by changed_on in descending order', () => {
+    test('should sort by changed_on in descending order', () => {
       const input = [
         {
           ...baseSlice,
@@ -193,12 +195,12 @@ describe('SliceAdder', () => {
           uuid: '9012',
         },
       ];
-      const sorted = input.sort(SliceAdder.sortByComparator('changed_on'));
+      const sorted = input.sort(sortByComparator('changed_on'));
       expect(sorted[0].changed_on).toBe(1578009600000);
       expect(sorted[2].changed_on).toBe(1577836800000);
     });
 
-    it('should sort by other fields in ascending order', () => {
+    test('should sort by other fields in ascending order', () => {
       const input = [
         {
           ...baseSlice,
@@ -222,13 +224,13 @@ describe('SliceAdder', () => {
           uuid: '9012',
         },
       ];
-      const sorted = input.sort(SliceAdder.sortByComparator('slice_name'));
+      const sorted = input.sort(sortByComparator('slice_name'));
       expect(sorted[0].slice_name).toBe('a');
       expect(sorted[2].slice_name).toBe('c');
     });
   });
 
-  it('should update selectedSliceIdsSet when props change', () => {
+  test('should update selectedSliceIdsSet when props change', () => {
     const { rerender } = renderSliceAdder();
     rerender(<SliceAdder {...defaultProps} selectedSliceIds={[129]} />);
     // Verify the internal state was updated by checking if new charts are available

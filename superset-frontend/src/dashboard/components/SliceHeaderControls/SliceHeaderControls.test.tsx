@@ -20,8 +20,14 @@
 import { render, screen, userEvent } from 'spec/helpers/testing-library';
 import { FeatureFlag, VizType } from '@superset-ui/core';
 import mockState from 'spec/fixtures/mockState';
+import { cachedSupersetGet } from 'src/utils/cachedSupersetGet';
 import SliceHeaderControls, { SliceHeaderControlsProps } from '.';
 
+jest.mock('src/utils/cachedSupersetGet');
+
+const mockCachedSupersetGet = cachedSupersetGet as jest.MockedFunction<
+  typeof cachedSupersetGet
+>;
 const SLICE_ID = 371;
 
 const createProps = (viz_type = VizType.Sunburst) =>
@@ -33,6 +39,7 @@ const createProps = (viz_type = VizType.Sunburst) =>
     exportFullCSV: jest.fn(),
     exportXLSX: jest.fn(),
     exportFullXLSX: jest.fn(),
+    exportPivotExcel: jest.fn(),
     forceRefresh: jest.fn(),
     handleToggleFullSize: jest.fn(),
     toggleExpandSlice: jest.fn(),
@@ -114,6 +121,19 @@ const renderWrapper = (
 const openMenu = () => {
   userEvent.click(screen.getByRole('button', { name: 'More Options' }));
 };
+
+beforeEach(() => {
+  mockCachedSupersetGet.mockClear();
+  mockCachedSupersetGet.mockResolvedValue({
+    response: {} as Response,
+    json: {
+      result: {
+        columns: [],
+        metrics: [],
+      },
+    },
+  });
+});
 
 test('Should render', () => {
   renderWrapper();
@@ -227,7 +247,7 @@ test('Export full Excel is under featureflag', async () => {
   userEvent.hover(screen.getByText('Download'));
   expect(await screen.findByText('Export to Excel')).toBeInTheDocument();
   expect(screen.queryByText('Export to full Excel')).not.toBeInTheDocument();
-}, 10000);
+});
 
 test('Should "export full Excel"', async () => {
   (global as any).featureFlags = {
@@ -252,6 +272,20 @@ test('Should not show export full Excel if report is not table', async () => {
   userEvent.hover(screen.getByText('Download'));
   expect(await screen.findByText('Export to Excel')).toBeInTheDocument();
   expect(screen.queryByText('Export to full Excel')).not.toBeInTheDocument();
+});
+
+test('Should export to pivoted Excel if report is pivot table', async () => {
+  const props = createProps(VizType.PivotTable);
+  renderWrapper(props);
+  openMenu();
+  expect(props.exportPivotExcel).toHaveBeenCalledTimes(0);
+  userEvent.hover(screen.getByText('Download'));
+  userEvent.click(await screen.findByText('Export to Pivoted Excel'));
+  expect(props.exportPivotExcel).toHaveBeenCalledTimes(1);
+  expect(props.exportPivotExcel).toHaveBeenCalledWith(
+    '#chart-id-371 .pvtTable',
+    props.slice.slice_name,
+  );
 });
 
 test('Should "Show chart description"', () => {
@@ -295,7 +329,7 @@ test('Drill to detail modal is under featureflag', () => {
   expect(screen.queryByText('Drill to detail')).not.toBeInTheDocument();
 });
 
-test('Should show "Drill to detail" with `can_explore` & `can_samples` perms', () => {
+test('Should show "Drill to detail" with `can_explore`, `can_samples` & `can_get_drill_info` perms', () => {
   (global as any).featureFlags = {
     [FeatureFlag.DrillToDetail]: true,
   };
@@ -305,13 +339,14 @@ test('Should show "Drill to detail" with `can_explore` & `can_samples` perms', (
     Admin: [
       ['can_samples', 'Datasource'],
       ['can_explore', 'Superset'],
+      ['can_get_drill_info', 'Dataset'],
     ],
   });
   openMenu();
   expect(screen.getByText('Drill to detail')).toBeInTheDocument();
 });
 
-test('Should show "Drill to detail" with `can_drill` & `can_samples` perms', () => {
+test('Should show "Drill to detail" with `can_drill` & `can_samples` & `can_get_drill_info` perms', () => {
   (global as any).featureFlags = {
     [FeatureFlag.DrillToDetail]: true,
   };
@@ -324,13 +359,14 @@ test('Should show "Drill to detail" with `can_drill` & `can_samples` perms', () 
     Admin: [
       ['can_samples', 'Datasource'],
       ['can_drill', 'Dashboard'],
+      ['can_get_drill_info', 'Dataset'],
     ],
   });
   openMenu();
   expect(screen.getByText('Drill to detail')).toBeInTheDocument();
 });
 
-test('Should show "Drill to detail" with both `canexplore` + `can_drill` & `can_samples` perms', () => {
+test('Should show "Drill to detail" with both `canexplore` + `can_drill` & `can_samples` & `can_get_drill_info` perms', () => {
   (global as any).featureFlags = {
     [FeatureFlag.DrillToDetail]: true,
   };
@@ -342,7 +378,9 @@ test('Should show "Drill to detail" with both `canexplore` + `can_drill` & `can_
   renderWrapper(props, {
     Admin: [
       ['can_samples', 'Datasource'],
+      ['can_explore', 'Superset'],
       ['can_drill', 'Dashboard'],
+      ['can_get_drill_info', 'Dataset'],
     ],
   });
   openMenu();
@@ -365,7 +403,7 @@ test('Should not show "Drill to detail" with neither of required perms', () => {
   expect(screen.queryByText('Drill to detail')).not.toBeInTheDocument();
 });
 
-test('Should not show "Drill to detail" only `can_dril` perm', () => {
+test('Should not show "Drill to detail" only `can_drill` perm', () => {
   (global as any).featureFlags = {
     [FeatureFlag.DrillToDetail]: true,
   };
@@ -376,6 +414,64 @@ test('Should not show "Drill to detail" only `can_dril` perm', () => {
   props.slice.slice_id = 18;
   renderWrapper(props, {
     Admin: [['can_drill', 'Dashboard']],
+  });
+  openMenu();
+  expect(screen.queryByText('Drill to detail')).not.toBeInTheDocument();
+});
+
+test('Should not show "Drill to detail" with only `can_drill` & `can_samples` perms', () => {
+  (global as any).featureFlags = {
+    [FeatureFlag.DrillToDetail]: true,
+  };
+  const props = {
+    ...createProps(),
+    supersetCanExplore: false,
+  };
+  props.slice.slice_id = 18;
+  renderWrapper(props, {
+    Admin: [
+      ['can_drill', 'Dashboard'],
+      ['can_samples', 'Datasource'],
+    ],
+  });
+  openMenu();
+  expect(screen.queryByText('Drill to detail')).not.toBeInTheDocument();
+});
+
+test('Should not show "Drill to detail" with only `can_explore` & `can_samples` perms', () => {
+  (global as any).featureFlags = {
+    [FeatureFlag.DrillToDetail]: true,
+  };
+  const props = {
+    ...createProps(),
+    supersetCanExplore: false,
+  };
+  props.slice.slice_id = 18;
+  renderWrapper(props, {
+    Admin: [
+      ['can_explore', 'Superset'],
+      ['can_samples', 'Datasource'],
+    ],
+  });
+  openMenu();
+  expect(screen.queryByText('Drill to detail')).not.toBeInTheDocument();
+});
+
+test('Should not show "Drill to detail" with only `can_explore`, `can_drill` & `can_samples` perms', () => {
+  (global as any).featureFlags = {
+    [FeatureFlag.DrillToDetail]: true,
+  };
+  const props = {
+    ...createProps(),
+    supersetCanExplore: false,
+  };
+  props.slice.slice_id = 18;
+  renderWrapper(props, {
+    Admin: [
+      ['can_explore', 'Superset'],
+      ['can_samples', 'Datasource'],
+      ['can_drill', 'Dashboard'],
+    ],
   });
   openMenu();
   expect(screen.queryByText('Drill to detail')).not.toBeInTheDocument();
@@ -448,4 +544,75 @@ test('Should not show the "Edit chart" button', () => {
   });
   openMenu();
   expect(screen.queryByText('Edit chart')).not.toBeInTheDocument();
+});
+
+test('Dataset drill info API call is made when user has drill permissions', async () => {
+  (global as any).featureFlags = {
+    [FeatureFlag.DrillToDetail]: true,
+  };
+  renderWrapper(undefined, {
+    Admin: [
+      ['can_samples', 'Datasource'],
+      ['can_explore', 'Superset'],
+      ['can_get_drill_info', 'Dataset'],
+    ],
+  });
+
+  await new Promise(resolve => setTimeout(resolve, 0));
+
+  expect(mockCachedSupersetGet).toHaveBeenCalledWith({
+    endpoint: expect.stringContaining(
+      '/api/v1/dataset/58/drill_info/?q=(dashboard_id:26)',
+    ),
+  });
+});
+
+test('Dataset drill info API call is not made when user lacks drill permissions', async () => {
+  (global as any).featureFlags = {
+    [FeatureFlag.DrillToDetail]: true,
+  };
+  renderWrapper(undefined, {
+    Admin: [['invalid_permission', 'Dashboard']],
+  });
+
+  await new Promise(resolve => setTimeout(resolve, 0));
+
+  expect(mockCachedSupersetGet).not.toHaveBeenCalled();
+});
+
+test('Should show "Embed code" in Share menu when feature flag is enabled and chart has data', async () => {
+  window.featureFlags = {
+    EMBEDDABLE_CHARTS: true,
+  };
+  const props = createProps();
+  renderWrapper(props);
+  openMenu();
+  userEvent.hover(screen.getByText('Share'));
+  expect(await screen.findByText('Embed code')).toBeInTheDocument();
+});
+
+test('Should NOT show "Embed code" in Share menu when feature flag is disabled', async () => {
+  window.featureFlags = {
+    EMBEDDABLE_CHARTS: false,
+  };
+  const props = createProps();
+  renderWrapper(props);
+  openMenu();
+  userEvent.hover(screen.getByText('Share'));
+  expect(
+    await screen.findByText('Copy permalink to clipboard'),
+  ).toBeInTheDocument();
+  expect(screen.queryByText('Embed code')).not.toBeInTheDocument();
+});
+
+test('Should pass formData to Share menu for embed code feature', () => {
+  window.featureFlags = {
+    EMBEDDABLE_CHARTS: true,
+  };
+  const props = createProps();
+  const { container } = renderWrapper(props);
+
+  expect(container).toBeInTheDocument();
+  openMenu();
+  expect(screen.getByText('Share')).toBeInTheDocument();
 });

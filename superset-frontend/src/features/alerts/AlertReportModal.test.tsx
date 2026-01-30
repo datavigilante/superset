@@ -21,9 +21,9 @@ import {
   render,
   screen,
   userEvent,
+  waitFor,
   within,
 } from 'spec/helpers/testing-library';
-import { VizType } from '@superset-ui/core';
 import { buildErrorTooltipMessage } from './buildErrorTooltipMessage';
 import AlertReportModal, { AlertReportModalProps } from './AlertReportModal';
 import { AlertObject, NotificationMethodOption } from './types';
@@ -49,6 +49,7 @@ const generateMockPayload = (dashboard = true) => {
     database: {
       database_name: 'examples',
       id: 1,
+      value: 1,
     },
     description: 'Some description',
     extra: {},
@@ -93,8 +94,9 @@ const generateMockPayload = (dashboard = true) => {
     ...mockPayload,
     chart: {
       id: 1,
-      slice_name: 'Test Chart',
-      viz_type: VizType.Table,
+      slice_name: 'test chart',
+      viz_type: 'table',
+      value: 1,
     },
   };
 };
@@ -117,12 +119,16 @@ fetchMock.get(ownersEndpoint, { result: [] });
 fetchMock.get(databaseEndpoint, { result: [] });
 fetchMock.get(dashboardEndpoint, { result: [] });
 fetchMock.get(chartEndpoint, { result: [{ text: 'table chart', value: 1 }] });
-fetchMock.get(tabsEndpoint, {
-  result: {
-    all_tabs: {},
-    tab_tree: [],
+fetchMock.get(
+  tabsEndpoint,
+  {
+    result: {
+      all_tabs: {},
+      tab_tree: [],
+    },
   },
-});
+  { name: tabsEndpoint },
+);
 
 // Create a valid alert with all required fields entered for validation check
 
@@ -134,7 +140,7 @@ const validAlert: AlertObject = {
   creation_method: 'alerts_reports',
   crontab: '0 0 * * *',
   dashboard_id: 0,
-  chart_id: 0,
+  chart_id: 1,
   force_screenshot: false,
   last_state: 'Not triggered',
   name: 'Test Alert',
@@ -153,6 +159,24 @@ const validAlert: AlertObject = {
   ],
   timezone: 'America/Rainy_River',
   type: 'Alert',
+  database: {
+    id: 1,
+    value: 1,
+    database_name: 'test_db',
+  } as any,
+  sql: 'SELECT COUNT(*) FROM test_table',
+  validator_config_json: {
+    op: '>',
+    threshold: 10.0,
+  },
+  working_timeout: 3600,
+  chart: {
+    id: 1,
+    value: 1,
+    label: 'Test Chart',
+    slice_name: 'Test Chart',
+    viz_type: 'table',
+  } as any,
 };
 
 jest.mock('./buildErrorTooltipMessage', () => ({
@@ -199,8 +223,8 @@ const comboboxSelect = async (
 test('properly renders add alert text', () => {
   const addAlertProps = generateMockedProps();
   render(<AlertReportModal {...addAlertProps} />, { useRedux: true });
-  const addAlertHeading = screen.getByRole('heading', { name: /add alert/i });
-  expect(addAlertHeading).toBeInTheDocument();
+  // The title is now in the modal header, not as a heading role
+  expect(screen.getByText('Add alert')).toBeInTheDocument();
   const addButton = screen.getByRole('button', { name: /add/i });
   expect(addButton).toBeInTheDocument();
 });
@@ -209,10 +233,8 @@ test('properly renders edit alert text', async () => {
   render(<AlertReportModal {...generateMockedProps(false, true)} />, {
     useRedux: true,
   });
-  const editAlertHeading = screen.getByRole('heading', {
-    name: /edit alert/i,
-  });
-  expect(editAlertHeading).toBeInTheDocument();
+  // The title is now in the modal header, not as a heading role
+  expect(screen.getByText('Edit alert')).toBeInTheDocument();
   const saveButton = screen.getByRole('button', { name: /save/i });
   expect(saveButton).toBeInTheDocument();
 });
@@ -221,10 +243,8 @@ test('properly renders add report text', () => {
   render(<AlertReportModal {...generateMockedProps(true)} />, {
     useRedux: true,
   });
-  const addReportHeading = screen.getByRole('heading', {
-    name: /add report/i,
-  });
-  expect(addReportHeading).toBeInTheDocument();
+  // The title is now in the modal header, not as a heading role
+  expect(screen.getByText('Add report')).toBeInTheDocument();
   const addButton = screen.getByRole('button', { name: /add/i });
   expect(addButton).toBeInTheDocument();
 });
@@ -234,10 +254,8 @@ test('properly renders edit report text', async () => {
     useRedux: true,
   });
 
-  const editReportHeading = screen.getByRole('heading', {
-    name: /edit report/i,
-  });
-  expect(editReportHeading).toBeInTheDocument();
+  // The title is now in the modal header, not as a heading role
+  expect(screen.getByText('Edit report')).toBeInTheDocument();
   const saveButton = screen.getByRole('button', { name: /save/i });
   expect(saveButton).toBeInTheDocument();
 });
@@ -264,6 +282,10 @@ test('renders 5 checkmarks for a valid alert', async () => {
   render(<AlertReportModal {...generateMockedProps(false, true, false)} />, {
     useRedux: true,
   });
+
+  // Wait for validation to complete by waiting for the modal to fully render
+  await screen.findByText('Edit alert');
+
   const checkmarks = await screen.findAllByRole('img', {
     name: /check-circle/i,
   });
@@ -365,7 +387,7 @@ test('renders all Alert Condition fields', async () => {
   });
   userEvent.click(screen.getByTestId('alert-condition-panel'));
   const database = screen.getByRole('combobox', { name: /database/i });
-  const sql = screen.getAllByRole('textbox')[2];
+  const sql = screen.getByRole('textbox');
   const condition = screen.getByRole('combobox', { name: /condition/i });
   const threshold = screen.getByRole('spinbutton');
   expect(database).toBeInTheDocument();
@@ -435,7 +457,7 @@ test('renders tab selection when Dashboard is selected', async () => {
   expect(
     screen.getByRole('combobox', { name: /dashboard/i }),
   ).toBeInTheDocument();
-  expect(screen.getByText(/select tab/i)).toBeInTheDocument();
+  expect(screen.getAllByText(/select tab/i)).toHaveLength(1);
 });
 
 test('changes to content options when chart is selected', async () => {
@@ -525,7 +547,8 @@ test('renders default Schedule fields', async () => {
   const scheduleType = screen.getByRole('combobox', {
     name: /schedule type/i,
   });
-  const timezone = screen.getByRole('combobox', {
+  // Wait for timezone selector to render after delay
+  const timezone = await screen.findByRole('combobox', {
     name: /timezone selector/i,
   });
   const logRetention = screen.getByRole('combobox', {
@@ -648,4 +671,101 @@ test('removes notification method on clicking trash can', async () => {
   expect(
     screen.getAllByRole('combobox', { name: /delivery method/i }).length,
   ).toBe(1);
+});
+
+test('renders dashboard filter dropdowns', async () => {
+  render(<AlertReportModal {...generateMockedProps(true, true)} />, {
+    useRedux: true,
+  });
+
+  userEvent.click(screen.getByTestId('contents-panel'));
+  const filterOptionDropdown = screen.getByRole('combobox', {
+    name: /select filter/i,
+  });
+  expect(filterOptionDropdown).toBeInTheDocument();
+});
+
+test('filter reappears in dropdown after clearing with X icon', async () => {
+  const chartDataEndpoint = 'glob:*/api/v1/chart/data*';
+
+  fetchMock.removeRoute(tabsEndpoint);
+  fetchMock.get(tabsEndpoint, {
+    result: {
+      all_tabs: { tab1: 'Tab 1' },
+      tab_tree: [{ title: 'Tab 1', value: 'tab1' }],
+      native_filters: {
+        all: [
+          {
+            id: 'NATIVE_FILTER-test1',
+            name: 'Test Filter 1',
+            filterType: 'filter_select',
+            targets: [{ column: { name: 'test_column_1' } }],
+            adhoc_filters: [],
+          },
+        ],
+        tab1: [
+          {
+            id: 'NATIVE_FILTER-test2',
+            name: 'Test Filter 2',
+            filterType: 'filter_select',
+            targets: [{ column: { name: 'test_column_2' } }],
+            adhoc_filters: [],
+          },
+        ],
+      },
+    },
+  });
+
+  fetchMock.post(chartDataEndpoint, { result: [{ data: [] }] });
+
+  render(<AlertReportModal {...generateMockedProps(true, true)} />, {
+    useRedux: true,
+  });
+
+  userEvent.click(screen.getByTestId('contents-panel'));
+  await screen.findByText(/test dashboard/i);
+
+  const filterDropdown = screen.getByRole('combobox', {
+    name: /select filter/i,
+  });
+  expect(filterDropdown).toBeInTheDocument();
+
+  userEvent.click(filterDropdown);
+
+  const filterOption = await waitFor(() => {
+    const virtualList = document.querySelector('.rc-virtual-list');
+    return within(virtualList as HTMLElement).getByText('Test Filter 1');
+  });
+
+  userEvent.click(filterOption);
+
+  await waitFor(() => {
+    const selectionItem = document.querySelector(
+      '.ant-select-selection-item[title="Test Filter 1"]',
+    );
+    expect(selectionItem).toBeInTheDocument();
+  });
+
+  const selectContainer = filterDropdown.closest('.ant-select');
+
+  const clearIcon = selectContainer?.querySelector(
+    '.ant-select-clear [aria-label="close-circle"]',
+  );
+  expect(clearIcon).toBeInTheDocument();
+  userEvent.click(clearIcon as Element);
+
+  await waitFor(() => {
+    const selectionItem = document.querySelector(
+      '.ant-select-selection-item[title="Test Filter 1"]',
+    );
+    expect(selectionItem).not.toBeInTheDocument();
+  });
+
+  userEvent.click(filterDropdown);
+  await waitFor(() => {
+    const virtualList = document.querySelector('.rc-virtual-list');
+    expect(
+      within(virtualList as HTMLElement).getByText('Test Filter 1'),
+    ).toBeInTheDocument();
+  });
 });

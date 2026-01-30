@@ -21,15 +21,13 @@ import configureStore from 'redux-mock-store';
 import { fireEvent, render, waitFor } from 'spec/helpers/testing-library';
 import fetchMock from 'fetch-mock';
 import { ImportResourceName } from 'src/views/CRUD/types';
-import ImportModelsModal, {
-  ImportModelsModalProps,
-} from 'src/components/ImportModal';
+import type { ImportModelsModalProps } from './types';
+import { ImportModal } from '.';
 
 const mockStore = configureStore([thunk]);
 const store = mockStore({});
 
 const DATABASE_IMPORT_URL = 'glob:*/api/v1/database/import/';
-fetchMock.config.overwriteRoutes = true;
 fetchMock.post(DATABASE_IMPORT_URL, { result: 'OK' });
 
 const requiredProps = {
@@ -45,11 +43,12 @@ const requiredProps = {
 };
 
 afterEach(() => {
+  fetchMock.clearHistory();
   jest.clearAllMocks();
 });
 
 const setup = (overrides: Partial<ImportModelsModalProps> = {}) =>
-  render(<ImportModelsModal {...requiredProps} {...overrides} />, { store });
+  render(<ImportModal {...requiredProps} {...overrides} />, { store });
 
 test('renders', () => {
   const { container } = setup();
@@ -106,11 +105,13 @@ test('should POST with request header `Accept: application/json`', async () => {
   );
   fireEvent.click(getByRole('button', { name: 'Import' }));
   await waitFor(() =>
-    expect(fetchMock.calls(DATABASE_IMPORT_URL)).toHaveLength(1),
+    expect(fetchMock.callHistory.calls(DATABASE_IMPORT_URL)).toHaveLength(1),
   );
-  expect(fetchMock.calls(DATABASE_IMPORT_URL)[0][1]?.headers).toStrictEqual({
-    Accept: 'application/json',
-    'X-CSRFToken': '1234',
+  expect(
+    fetchMock.callHistory.calls(DATABASE_IMPORT_URL)[0].options?.headers,
+  ).toStrictEqual({
+    accept: 'application/json',
+    'x-csrftoken': '1234',
   });
 });
 

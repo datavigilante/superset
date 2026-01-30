@@ -16,6 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
+// Mock isMatrixifyEnabled before loading any modules
 import fetchMock from 'fetch-mock';
 import {
   getChartControlPanelRegistry,
@@ -32,6 +34,12 @@ import {
   waitFor,
 } from 'spec/helpers/testing-library';
 import ExploreViewContainer from '.';
+
+jest.doMock('@superset-ui/core', () => ({
+  __esModule: true,
+  ...jest.requireActual('@superset-ui/core'),
+  isMatrixifyEnabled: jest.fn(() => false),
+}));
 
 const reduxState = {
   explore: {
@@ -250,11 +258,13 @@ test('retains query mode requirements when query_mode is enabled', async () => {
 
   await waitFor(() => renderWithRouter({ initialState: customState }));
 
-  const formDataEndpointCalls = fetchMock.calls(/api\/v1\/explore\/form_data/);
+  const formDataEndpointCalls = fetchMock.callHistory.calls(
+    /api\/v1\/explore\/form_data/,
+  );
   expect(formDataEndpointCalls.length).toBeGreaterThan(0);
   const lastCall = formDataEndpointCalls[formDataEndpointCalls.length - 1];
 
-  const body = JSON.parse(lastCall[1]?.body as string);
+  const body = JSON.parse(lastCall.options?.body as string);
   const formData = JSON.parse(body.form_data);
 
   const queryModeFields = Object.keys(
@@ -288,14 +298,183 @@ test('does omit hiddenFormData when query_mode is not enabled', async () => {
 
   await waitFor(() => renderWithRouter({ initialState: customState }));
 
-  const formDataEndpointCalls = fetchMock.calls(/api\/v1\/explore\/form_data/);
+  const formDataEndpointCalls = fetchMock.callHistory.calls(
+    /api\/v1\/explore\/form_data/,
+  );
   expect(formDataEndpointCalls.length).toBeGreaterThan(0);
   const lastCall = formDataEndpointCalls[formDataEndpointCalls.length - 1];
 
-  const body = JSON.parse(lastCall[1]?.body as string);
+  const body = JSON.parse(lastCall.options?.body as string);
   const formData = JSON.parse(body.form_data);
 
   Object.keys(customState.explore.hiddenFormData).forEach(key => {
     expect(formData[key]).toBeUndefined();
   });
+});
+
+// Component tests for the errorMessage behavior
+test('does not show error indicator when no controls have validation errors', async () => {
+  getChartControlPanelRegistry().registerValue('table', {
+    controlPanelSections: [],
+  });
+  const customState = {
+    ...reduxState,
+    explore: {
+      ...reduxState.explore,
+      controls: {
+        ...reduxState.explore.controls,
+        metric: { value: 'count', label: 'Metric' },
+        groupby: { value: ['category'], label: 'Group by' },
+      },
+    },
+  };
+
+  renderWithRouter({ initialState: customState });
+
+  await waitFor(() => {
+    const errorIndicator = screen.queryByTestId('query-error-tooltip-trigger');
+    expect(errorIndicator).not.toBeInTheDocument();
+  });
+});
+
+test('shows error indicator when controls have validation errors', async () => {
+  getChartControlPanelRegistry().registerValue('table', {
+    controlPanelSections: [],
+  });
+  const customState = {
+    ...reduxState,
+    explore: {
+      ...reduxState.explore,
+      controls: {
+        ...reduxState.explore.controls,
+        metric: {
+          value: '',
+          label: 'Metric',
+          validationErrors: ['Metric is required'],
+        },
+      },
+    },
+  };
+
+  renderWithRouter({ initialState: customState });
+
+  const errorIndicator = await screen.findByTestId(
+    'query-error-tooltip-trigger',
+  );
+
+  userEvent.hover(errorIndicator);
+
+  const tooltip = await screen.findByRole('tooltip');
+  expect(tooltip).toBeInTheDocument();
+
+  const errorMessage = await screen.findByText(/Metric is required/);
+  expect(errorMessage).toBeInTheDocument();
+});
+
+test('shows error indicator for multiple controls with validation errors', async () => {
+  getChartControlPanelRegistry().registerValue('table', {
+    controlPanelSections: [],
+  });
+  const customState = {
+    ...reduxState,
+    explore: {
+      ...reduxState.explore,
+      controls: {
+        ...reduxState.explore.controls,
+        metric: {
+          value: '',
+          label: 'Metric',
+          validationErrors: ['Field is required'],
+        },
+        groupby: {
+          value: [],
+          label: 'Group by',
+          validationErrors: ['Field is required'],
+        },
+      },
+    },
+  };
+
+  renderWithRouter({ initialState: customState });
+
+  const errorIndicator = await screen.findByTestId(
+    'query-error-tooltip-trigger',
+  );
+
+  userEvent.hover(errorIndicator);
+
+  const tooltip = await screen.findByRole('tooltip');
+  expect(tooltip).toBeInTheDocument();
+
+  expect(await screen.findByText(/Field is required/)).toBeInTheDocument();
+});
+
+test('shows error indicator for control with multiple validation errors', async () => {
+  getChartControlPanelRegistry().registerValue('table', {
+    controlPanelSections: [],
+  });
+  const customState = {
+    ...reduxState,
+    explore: {
+      ...reduxState.explore,
+      controls: {
+        ...reduxState.explore.controls,
+        metric: {
+          value: '',
+          label: 'Metric',
+          validationErrors: ['Field is required', 'Invalid format'],
+        },
+      },
+    },
+  };
+
+  renderWithRouter({ initialState: customState });
+
+  const errorIndicator = await screen.findByTestId(
+    'query-error-tooltip-trigger',
+  );
+
+  userEvent.hover(errorIndicator);
+
+  const tooltip = await screen.findByRole('tooltip');
+  expect(tooltip).toBeInTheDocument();
+
+  expect(await screen.findByText(/Field is required/)).toBeInTheDocument();
+  expect(await screen.findByText(/Invalid format/)).toBeInTheDocument();
+});
+
+test('shows error indicator with function labels', async () => {
+  getChartControlPanelRegistry().registerValue('table', {
+    controlPanelSections: [],
+  });
+  // Ensure the explore state passed to the label function contains the expected property
+  const customState = {
+    ...reduxState,
+    explore: {
+      ...reduxState.explore,
+      someState: 'test',
+      controls: {
+        ...reduxState.explore.controls,
+        metric: {
+          value: '',
+          label: (exploreState: { someState: string }) =>
+            `Dynamic Metric (${exploreState.someState})`,
+          validationErrors: ['Metric is required'],
+        },
+      },
+    },
+  };
+
+  renderWithRouter({ initialState: customState });
+
+  const errorIndicator = await screen.findByTestId(
+    'query-error-tooltip-trigger',
+  );
+
+  userEvent.hover(errorIndicator);
+
+  const tooltip = await screen.findByRole('tooltip');
+  expect(tooltip).toBeInTheDocument();
+
+  expect(await screen.findByText(/Metric is required/)).toBeInTheDocument();
 });

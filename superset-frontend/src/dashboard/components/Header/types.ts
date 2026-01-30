@@ -26,8 +26,13 @@ interface DashboardInfo {
   userId: string | undefined;
   dash_edit_perm: boolean;
   dash_save_perm: boolean;
+  dash_export_perm?: boolean;
   metadata?: Record<string, any>;
   common?: { conf: Record<string, any> };
+  theme?: {
+    id: number;
+    name: string;
+  } | null;
 }
 
 export interface HeaderDropdownProps {
@@ -45,25 +50,23 @@ export interface HeaderDropdownProps {
   hasUnsavedChanges: boolean;
   isLoading: boolean;
   layout: Layout;
-  onChange: () => void;
   onSave: () => void;
   refreshFrequency: number;
-  setRefreshFrequency: (refreshInterval: number, isPersistent: boolean) => void;
   shouldPersistRefreshFrequency: boolean;
   showPropertiesModal: () => void;
-  startPeriodicRender: (interval: number) => void;
-  updateCss: (css: string) => void;
+  showRefreshModal: () => void;
   userCanEdit: boolean;
   userCanSave: boolean;
   userCanShare: boolean;
   userCanCurate: boolean;
+  userCanExport: boolean;
   manageEmbedded: () => void;
-  dataMask: any;
+  dataMask?: any;
   lastModifiedTime: number;
   logEvent: () => void;
-  refreshLimit: number;
-  refreshWarning: string;
-  directPathToChild: string[];
+  refreshLimit?: number;
+  refreshWarning?: string;
+  directPathToChild?: string[];
   showReportModal: () => void;
   setCurrentReportDeleting: (alert: AlertObject | null) => void;
 }
@@ -76,7 +79,7 @@ export interface HeaderProps {
   charts: ChartState | {};
   colorScheme?: string;
   customCss: string;
-  user: Object | undefined;
+  user: object | undefined;
   dashboardInfo: DashboardInfo;
   dashboardTitle: string;
   setColorScheme: () => void;

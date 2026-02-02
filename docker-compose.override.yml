@@ -39,6 +39,7 @@ services:
       - /opt/superset-ssh:/mnt/ssh:ro
     networks:
       - tasks_app_network
+      - default
   superset-websocket:
     ports:
       - 8080:8080
@@ -48,4 +49,5 @@ services:
 networks:
   tasks_app_network:
     external: true
+  default:
 

@@ -18,22 +18,22 @@
 services:
   nginx:
     ports:
-      - "8082:80"
+      - "${TS_INTERFACE:-127.0.0.1}:8082:80"
   redis:
     ports:
-      - "127.0.0.1:6379:6379"
+      - "${TS_INTERFACE:-127.0.0.1}:6379:6379"
   db:
     ports:
-      - "0.0.0.0:5435:5432"
+      - "${TS_INTERFACE:-127.0.0.1}:5435:5432"
   superset:
     build:
       context: .
       dockerfile: Dockerfile.ssh
       target: dev
     ports:
-      - 8089:8088
+      - "${TS_INTERFACE:-127.0.0.1}:8089:8088"
       # When in cypress-mode ->
-      - 8081:8081
+      - "${TS_INTERFACE:-127.0.0.1}:8081:8081"
     volumes:
       - /home/superset/repos/Ntherm-DW/:/app/Ntherm-DW
       - /opt/superset-ssh:/mnt/ssh:ro
@@ -48,7 +48,7 @@ services:
       - default
   superset-websocket:
     ports:
-      - 8080:8080
+      - "${TS_INTERFACE:-127.0.0.1}:8080:8080"
     environment:
       - REDIS_PORT=6379
 

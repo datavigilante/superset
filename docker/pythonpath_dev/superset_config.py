@@ -159,6 +159,9 @@ FEATURE_FLAGS = {
     "ALLOW_FULL_CSV_EXPORT": True,
     "ALLOW_ADHOC_SUBQUERY": True,
     "DASHBOARD_RBAC": True,
+    "ENABLE_WELCOME_PAGE": False,
 }
+
+SUPERSET_WEBSERVER_REDIRECT_ROOT = "/dashboard/list/"
 
 print("CONFIG: Superset configuration loading complete")

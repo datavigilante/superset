@@ -164,6 +164,19 @@ FEATURE_FLAGS = {
     "ENABLE_TEMPLATE_PROCESSING": True, 
 }
 
-SUPERSET_WEBSERVER_REDIRECT_ROOT = "/dashboard/list/"
+# SUPERSET_WEBSERVER_REDIRECT_ROOT = "/dashboard/list/"
+from flask import redirect, g
+from flask_appbuilder import expose, IndexView
+from superset.utils.core import get_user_id
+from superset.superset_typing import FlaskResponse
+
+class SupersetIndexView(IndexView):
+    @expose("/")
+    def index(self) -> FlaskResponse:
+        if not g.user or not get_user_id():
+            return redirect("/login")
+        return redirect("/dashboard/list")
+
+FAB_INDEX_VIEW = f"{SupersetIndexView.__module__}.{SupersetIndexView.__name__}"
 
 print("CONFIG: Superset configuration loading complete")

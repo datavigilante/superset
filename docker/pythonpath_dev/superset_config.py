@@ -124,7 +124,7 @@ WEBDRIVER_BASEURL = "http://nginx:80/"
 # WEBDRIVER_BASEURL_USER_FRIENDLY = (
 #     f"http://localhost:8888/{os.environ.get('SUPERSET_APP_ROOT', '/')}/"
 # )
-WEBDRIVER_BASEURL_USER_FRIENDLY = "http://staging.ss.ntherm.com/"
+WEBDRIVER_BASEURL_USER_FRIENDLY = "http://ss.ntherm.com/"
 
 SQLLAB_CTAS_NO_LIMIT = True
 

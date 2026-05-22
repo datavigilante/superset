@@ -117,7 +117,7 @@ superset/translations/**/messages.mo
 
 
 cache/
-# docker/*local*
+docker/*local*
 docker/superset-websocket/config.json
 # docker-compose.override.yml
 

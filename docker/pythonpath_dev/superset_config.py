@@ -102,16 +102,30 @@ class CeleryConfig:
         },
     }
 
-
 CELERY_CONFIG = CeleryConfig
 
-FEATURE_FLAGS = {"ALERT_REPORTS": True, "DATASET_FOLDERS": True}
-ALERT_REPORTS_NOTIFICATION_DRY_RUN = True
-WEBDRIVER_BASEURL = f"http://superset_app{os.environ.get('SUPERSET_APP_ROOT', '/')}/"  # When using docker compose baseurl should be http://superset_nginx{ENV{BASEPATH}}/  # noqa: E501
-# The base URL for the email report hyperlinks.
-WEBDRIVER_BASEURL_USER_FRIENDLY = (
-    f"http://localhost:8888/{os.environ.get('SUPERSET_APP_ROOT', '/')}/"
-)
+ALERT_REPORTS_NOTIFICATION_DRY_RUN = False  # Set to True to prevent actual sending of emails, useful for testing
+
+WEBDRIVER_TYPE = "chrome" 
+WEBDRIVER_OPTION_ARGS = [
+    "--headless",
+    "--no-sandbox",             
+    "--disable-dev-shm-usage", 
+    "--disable-gpu"
+]
+WEBDRIVER_WINDOW = {
+    "dashboard": (1600, 2000),
+    "slice": (3000, 1200),
+    "window": (1600, 2000)
+}
+
+# WEBDRIVER_BASEURL = f"http://superset_app{os.environ.get('SUPERSET_APP_ROOT', '/')}/"  # When using docker compose baseurl should be http://superset_nginx{ENV{BASEPATH}}/  # noqa: E501
+WEBDRIVER_BASEURL = "http://nginx:80/"
+# WEBDRIVER_BASEURL_USER_FRIENDLY = (
+#     f"http://localhost:8888/{os.environ.get('SUPERSET_APP_ROOT', '/')}/"
+# )
+WEBDRIVER_BASEURL_USER_FRIENDLY = "http://staging.ss.ntherm.com/"
+
 SQLLAB_CTAS_NO_LIMIT = True
 
 log_level_text = os.getenv("SUPERSET_LOG_LEVEL", "INFO")
@@ -162,7 +176,25 @@ FEATURE_FLAGS = {
     "ENABLE_WELCOME_PAGE": False,
     "GLOBAL_ASYNC_QUERIES": False,
     "ENABLE_TEMPLATE_PROCESSING": True, 
+    "ALERT_REPORTS": True
 }
+
+SMTP_HOST = "smtp.sendgrid.net"
+SMTP_PORT = 587
+SMTP_STARTTLS = True
+SMTP_USER = "apikey" 
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
+SMTP_MAIL_FROM = "no-reply@ntherm.com"
+
+# GLOBAL_ASYNC_QUERIES_JWT_SECRET = "CHANGE-ME-IN-PRODUCTION-GOTTA-BE-LONG-AND-SECRET"
+
+# # 3. Tell the UI where to connect via the proxy
+# GLOBAL_ASYNC_QUERIES_WEBSOCKET_URL = "wss://staging.ss.ntherm.com/ws"
+
+# # 4. Force secure cookies because you are using an HTTPS proxy
+# GLOBAL_ASYNC_QUERIES_JWT_COOKIE_SECURE = True
+# GLOBAL_ASYNC_QUERIES_JWT_COOKIE_DOMAIN = "staging.ss.ntherm.com"
+
 
 # SUPERSET_WEBSERVER_REDIRECT_ROOT = "/dashboard/list/"
 from flask import redirect, g

@@ -114,7 +114,7 @@ WEBDRIVER_OPTION_ARGS = [
     "--disable-gpu"
 ]
 WEBDRIVER_WINDOW = {
-    "dashboard": (1600, 2000),
+    "dashboard": (1600, 5000),
     "slice": (3000, 1200),
     "window": (1600, 2000)
 }

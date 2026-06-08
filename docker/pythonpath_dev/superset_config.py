@@ -121,12 +121,13 @@ WEBDRIVER_WINDOW = {
 }
 
 # WEBDRIVER_BASEURL = f"http://superset_app{os.environ.get('SUPERSET_APP_ROOT', '/')}/"  # When using docker compose baseurl should be http://superset_nginx{ENV{BASEPATH}}/  # noqa: E501
-WEBDRIVER_BASEURL = "http://nginx:80/"
+WEBDRIVER_BASEURL = "http://superset:8088/"
 # WEBDRIVER_BASEURL_USER_FRIENDLY = (
 #     f"http://localhost:8888/{os.environ.get('SUPERSET_APP_ROOT', '/')}/"
 # )
 WEBDRIVER_BASEURL_USER_FRIENDLY = "http://ss.ntherm.com/"
 
+SUPERSET_WEBSERVER_TIMEOUT = 180
 SCREENSHOT_LOAD_WAIT = 180
 SCREENSHOT_SELENIUM_ANIMATION_WAIT = 5
 

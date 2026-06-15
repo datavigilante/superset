@@ -62,6 +62,10 @@ SQLALCHEMY_EXAMPLES_URI = os.getenv(
     ),
 )
 
+SQLALCHEMY_POOL_SIZE = 10           # Number of VIP connections per worker
+SQLALCHEMY_MAX_OVERFLOW = 10        # Number of backup connections allowed when busy
+SQLALCHEMY_POOL_TIMEOUT = 30        # Seconds to wait in line for a connection
+SQLALCHEMY_POOL_RECYCLE = 3600      # Recycle connections after 1 hour to prevent stale drops
 
 REDIS_HOST = os.getenv("REDIS_HOST", "redis")
 REDIS_PORT = os.getenv("REDIS_PORT", "6379")

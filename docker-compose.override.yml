@@ -19,6 +19,9 @@ services:
   nginx:
     ports:
       - "${TS_INTERFACE:-127.0.0.1}:8082:80"
+    networks:
+      - default
+      - tasks_shared
   redis:
     ports:
       - "${TS_INTERFACE:-127.0.0.1}:6379:6379"
@@ -64,6 +67,8 @@ services:
         - default
 
 networks:
+  tasks_shared:
+    external: true
   tasks_app_network:
     external: true
   default:

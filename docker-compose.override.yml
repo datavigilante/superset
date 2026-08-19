@@ -50,6 +50,7 @@ services:
     networks:
       - tasks_app_network
       - default
+    shm_size: "2g"
   superset-worker:
       build:
         context: .
@@ -65,6 +66,7 @@ services:
       networks:
         - tasks_app_network
         - default
+      shm_size: "2g"
 
 networks:
   tasks_shared:

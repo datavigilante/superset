@@ -22,12 +22,20 @@ services:
     networks:
       - default
       - tasks_shared
+    labels:
+      autoheal: "true"  
   redis:
     ports:
       - "${TS_INTERFACE:-127.0.0.1}:6379:6379"
+    labels:
+      autoheal: "true"  
+
   db:
     ports:
       - "${TS_INTERFACE:-127.0.0.1}:5435:5432"
+    labels:
+      autoheal: "true"  
+
   superset:
     build:
       context: .
@@ -51,6 +59,8 @@ services:
       - tasks_app_network
       - default
     shm_size: "2g"
+    labels:
+      autoheal: "true" 
   superset-worker:
       build:
         context: .
@@ -67,6 +77,17 @@ services:
         - tasks_app_network
         - default
       shm_size: "2g"
+      labels:
+        autoheal: "true"  
+
+  autoheal:
+    image: willfarrell/autoheal
+    container_name: autoheal
+    restart: unless-stopped
+    environment:
+      - AUTOHEAL_CONTAINER_LABEL=autoheal 
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
 
 networks:
   tasks_shared:
